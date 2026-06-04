@@ -1,6 +1,19 @@
 {
   "2026-06-04": {
-    "simple": [],
+    "simple": [
+      {
+        "asset": "qqq",
+        "side": "Long",
+        "entry": "100",
+        "totalQty": "100",
+        "stop1": "50",
+        "qty1": "50",
+        "stop2": "50",
+        "qty2": "50",
+        "takeProfit": "300",
+        "notes": ""
+      }
+    ],
     "hedged": [
       {
         "ticker": "xlk",
@@ -14,9 +27,9 @@
         "qty1": "50",
         "stop2": "50",
         "qty2": "50",
-        "takeProfit": null
+        "takeProfit": "2120"
       }
     ],
-    "savedAt": "2026-06-04T08:02:12.176Z"
+    "savedAt": "2026-06-04T08:15:56.566Z"
   }
 }
