@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trading Journal — Daily Risk</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2028; --panel-2: #232b36;
+    --border: #2d3744; --text: #e6edf3; --muted: #8b96a5;
+    --accent: #4a9eff; --green: #3fb950; --red: #f85149;
+    --amber: #d29922; --input-bg: #0d1117;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.4; }
+  header { background: var(--panel); border-bottom: 1px solid var(--border);
+    padding: 12px 20px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 12px; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header .date-input { display: flex; align-items: center; gap: 8px; }
+  header input[type="date"] { background: var(--input-bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px; padding: 5px 8px; font-size: 13px; }
+  .gh-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; }
+  .gh-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .gh-dot.connected { background: var(--green); }
+  .gh-dot.busy { background: var(--amber); }
+  .gh-dot.error { background: var(--red); }
+  .btn { background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 4px; padding: 6px 12px; cursor: pointer; font-size: 12px; transition: all 0.15s; }
+  .btn:hover { background: var(--border); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-primary:hover { background: #3b82f6; }
+  .btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+  .btn-danger:hover { background: var(--red); color: white; }
+  main { padding: 16px 20px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .section { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 6px; margin-bottom: 16px; }
+  .section-header { padding: 10px 14px; border-bottom: 1px solid var(--border);
+    font-weight: 600; font-size: 13px; display: flex;
+    justify-content: space-between; align-items: center; }
+  .section-body { padding: 14px; }
+  .account-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .stat { background: var(--panel-2); border-radius: 4px; padding: 10px 12px; }
+  .stat label { display: block; font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat input, .stat .value { background: var(--input-bg); border: 1px solid var(--border);
+    color: var(--text); padding: 6px 8px; border-radius: 3px; font-size: 14px;
+    width: 100%; font-family: "SF Mono", Menlo, monospace; }
+  .stat .value { background: transparent; border: none; padding: 6px 0; font-weight: 600; }
+  .stat .value.pos { color: var(--green); }
+  .stat .value.neg { color: var(--red); }
+  table.positions { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.positions th, table.positions td { padding: 6px 8px; text-align: right;
+    border-bottom: 1px solid var(--border); }
+  table.positions th { background: var(--panel-2); font-weight: 600; color: var(--muted);
+    text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; white-space: nowrap; }
+  table.positions th:first-child, table.positions td:first-child { text-align: left; }
+  table.positions td.computed { background: rgba(74, 158, 255, 0.05); color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace; }
+  table.positions td.computed.neg { color: var(--red); }
+  table.positions td.computed.pos { color: var(--green); }
+  table.positions input, table.positions select { background: var(--input-bg);
+    border: 1px solid var(--border); color: var(--text); padding: 4px 6px;
+    border-radius: 3px; font-size: 12px; width: 100%; min-width: 70px;
+    font-family: "SF Mono", Menlo, monospace; text-align: right; }
+  table.positions input[type="text"] { text-align: left; }
+  table.positions select { text-align: left; }
+  table.positions input:focus, table.positions select:focus { outline: none; border-color: var(--accent); }
+  .icon-btn { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    width: 24px; height: 24px; border-radius: 3px; cursor: pointer;
+    font-size: 12px; padding: 0; line-height: 1; }
+  .icon-btn:hover { color: var(--red); border-color: var(--red); }
+  .table-wrap { overflow-x: auto; }
+  .history-list { max-height: 320px; overflow-y: auto; }
+  .history-item { padding: 8px 12px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .history-item:last-child { border-bottom: none; }
+  .history-item .date { font-weight: 600; font-family: "SF Mono", Menlo, monospace; }
+  .history-item .summary { color: var(--muted); font-size: 11px; flex: 1; }
+  .history-item .actions { display: flex; gap: 6px; }
+  .empty-state { text-align: center; padding: 24px; color: var(--muted); font-style: italic; }
+  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--panel-2);
+    border: 1px solid var(--border); border-left: 3px solid var(--green);
+    padding: 12px 16px; border-radius: 4px; font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); opacity: 0; transform: translateY(10px);
+    transition: all 0.2s; pointer-events: none; z-index: 100; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { border-left-color: var(--red); }
+  .footer-note { text-align: center; color: var(--muted); font-size: 11px; padding: 16px; }
+  .help-text { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .formula-note { font-size: 11px; color: var(--muted); padding: 4px 14px 10px;
+    font-family: "SF Mono", Menlo, monospace; }
+  /* Modal */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center; z-index: 200; }
+  .modal-backdrop.hidden { display: none; }
+  .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 24px; width: 420px; max-width: 95vw; }
+  .modal h2 { margin: 0 0 6px; font-size: 15px; }
+  .modal p { color: var(--muted); font-size: 12px; margin: 0 0 18px; line-height: 1.5; }
+  .modal label { display: block; font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; margin-top: 12px; }
+  .modal input { width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 10px; border-radius: 4px; font-size: 13px;
+    font-family: "SF Mono", Menlo, monospace; }
+  .modal input:focus { outline: none; border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .modal-note { font-size: 11px; color: var(--muted); margin-top: 12px; }
+  .modal-note a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- GitHub Settings Modal -->
+<div class="modal-backdrop hidden" id="ghModal">
+  <div class="modal">
+    <h2>🔗 Connect to GitHub</h2>
+    <p>Your snapshots will be saved as <code>snapshots.json</code> in a GitHub repo. Credentials are stored in this browser only; all journal data lives in your repo.</p>
+    <label>GitHub Username</label>
+    <input type="text" id="ghUser" placeholder="e.g. johndoe" autocomplete="off" />
+    <label>Repository Name</label>
+    <input type="text" id="ghRepo" placeholder="e.g. trading-journal" autocomplete="off" />
+    <label>Branch (default: main)</label>
+    <input type="text" id="ghBranch" placeholder="main" autocomplete="off" />
+    <label>Personal Access Token</label>
+    <input type="password" id="ghPat" placeholder="ghp_..." autocomplete="off" />
+    <div class="modal-note">
+      Token needs <strong>repo</strong> scope.
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=TradingJournal" target="_blank">Create one here →</a>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="ghModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="ghModalSave">Save &amp; Connect</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <h1>📊 Trading Journal — Daily Risk</h1>
+  <div class="header-right">
+    <div class="gh-status" id="ghStatus" title="Click to configure GitHub">
+      <div class="gh-dot" id="ghDot"></div>
+      <span id="ghLabel">Not connected</span>
+    </div>
+    <div class="date-input">
+      <label for="entryDate">Date:</label>
+      <input type="date" id="entryDate" />
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <button class="btn btn-primary" id="btnSave">💾 Save Today</button>
+    <button class="btn" id="btnCloneYesterday">📋 Clone Latest</button>
+    <button class="btn" id="btnAddSimple">➕ Add Position</button>
+    <button class="btn" id="btnAddHedged">➕ Add Hedged / Options</button>
+    <button class="btn" id="btnClear">🗑 Clear Form</button>
+    <span style="flex:1"></span>
+    <button class="btn" id="btnExport">⬇ Export JSON</button>
+    <button class="btn" id="btnImport">⬆ Import JSON</button>
+    <input type="file" id="fileInput" accept=".json" style="display:none" />
+  </div>
+
+  <section class="section">
+    <div class="section-header">Account Context</div>
+    <div class="section-body">
+      <div class="account-grid">
+        <div class="stat"><label>Account Balance (USD)</label>
+          <input type="number" id="balance" step="0.01" /></div>
+        <div class="stat"><label>Target Annual Stop ($)</label>
+          <input type="number" id="annualStop" step="0.01" /></div>
+        <div class="stat"><label>YTD P&amp;L ($)</label>
+          <input type="number" id="ytdPnl" step="0.01" /></div>
+        <div class="stat"><label>Free Cashflow (auto)</label>
+          <div class="value" id="freeCash">—</div></div>
+        <div class="stat"><label>1% Risk ($)</label>
+          <div class="value" id="risk1">—</div></div>
+        <div class="stat"><label>2% Risk ($)</label>
+          <div class="value" id="risk2">—</div></div>
+        <div class="stat"><label>3% Risk ($)</label>
+          <div class="value" id="risk3">—</div></div>
+        <div class="stat"><label>Daily P&amp;L ($)</label>
+          <input type="number" id="dailyPnl" step="0.01" />
+          <div class="help-text">Recorded with snapshot</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <span>Simple Positions (single stop)</span>
+      <span id="simpleRiskSummary" style="font-weight:400; color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div class="formula-note">
+      pos size = −risk / (stop − entry) • cost basis = pos size × entry • R/R = −(tp − entry) / (stop − entry)
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+        <table class="positions">
+          <thead><tr>
+            <th>Asset</th><th>L/S</th><th>Entry</th><th>Stop</th><th>Take Profit</th>
+            <th>Risk $</th><th>Pos Size</th><th>Cost Basis</th><th>R/R</th>
+            <th>Notes</th><th></th>
+          </tr></thead>
+          <tbody id="simpleBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <span>Hedged / Options Positions (two stop legs)</span>
+      <span id="hedgedRiskSummary" style="font-weight:400; color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div class="formula-note">
+      cash delta = delta × multiplier × qty − premium adj •
+      risk = ABS(stop2×qty2 + stop1×qty1) − spot×cash delta •
+      R/R = ABS((tp − spot) × cash delta / risk)
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+        <table class="positions">
+          <thead><tr>
+            <th>Ticker</th><th>L/S</th><th>Qty</th><th>Mult</th><th>Delta</th>
+            <th>Prem Adj</th><th>Cash Δ</th><th>Spot</th>
+            <th>Stop 1</th><th>Qty 1</th><th>Stop 2</th><th>Qty 2</th>
+            <th>TP</th><th>Risk</th><th>R/R</th><th></th>
+          </tr></thead>
+          <tbody id="hedgedBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <span>Saved Snapshots</span>
+      <span id="historyCount" style="font-weight:400; color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </section>
+
+  <div class="footer-note">
+    Data is stored in your GitHub repo as <code>snapshots.json</code>. Use Export JSON as a local backup.
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── GitHub config (credentials only in localStorage) ───────────────────────
+const GH_CFG_KEY = 'tradingJournal_ghConfig';
+
+function ghConfig() {
+  try { return JSON.parse(localStorage.getItem(GH_CFG_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function ghConfigured() {
+  const c = ghConfig(); return !!(c.user && c.repo && c.pat);
+}
+
+// ─── GitHub API helpers ──────────────────────────────────────────────────────
+let _cache = null;   // in-memory snapshot cache
+let _sha   = null;   // current blob SHA for conflict-free writes
+
+function ghHeaders() {
+  const { pat } = ghConfig();
+  return { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' };
+}
+function ghUrl() {
+  const { user, repo, branch } = ghConfig();
+  const b = branch || 'main';
+  return `https://api.github.com/repos/${user}/${repo}/contents/snapshots.json?ref=${b}`;
+}
+function ghUrlWrite() {
+  const { user, repo } = ghConfig();
+  return `https://api.github.com/repos/${user}/${repo}/contents/snapshots.json`;
+}
+
+async function ghRead() {
+  setStatus('busy', 'Loading…');
+  try {
+    const res = await fetch(ghUrl(), { headers: ghHeaders() });
+    if (res.status === 404) { _cache = {}; _sha = null; setStatus('connected', ghConfig().repo); return {}; }
+    if (!res.ok) throw new Error(`GitHub ${res.status}`);
+    const json = await res.json();
+    _sha = json.sha;
+    _cache = JSON.parse(atob(json.content.replace(/\n/g,'')));
+    setStatus('connected', ghConfig().repo);
+    return _cache;
+  } catch(e) {
+    setStatus('error', 'Error: ' + e.message);
+    throw e;
+  }
+}
+
+async function ghWrite(data) {
+  setStatus('busy', 'Saving…');
+  const { branch } = ghConfig();
+  const body = {
+    message: `journal: snapshot update ${new Date().toISOString().slice(0,10)}`,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+    branch: branch || 'main'
+  };
+  if (_sha) body.sha = _sha;
+  try {
+    const res = await fetch(ghUrlWrite(), { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+    if (!res.ok) { const t = await res.text(); throw new Error(`GitHub ${res.status}: ${t}`); }
+    const json = await res.json();
+    _sha = json.content.sha;
+    _cache = data;
+    setStatus('connected', ghConfig().repo);
+  } catch(e) {
+    setStatus('error', 'Save failed: ' + e.message);
+    throw e;
+  }
+}
+
+async function ensureLoaded() {
+  if (!ghConfigured()) { openModal(); throw new Error('Not configured'); }
+  if (_cache === null) await ghRead();
+  return _cache;
+}
+
+// ─── Status badge ────────────────────────────────────────────────────────────
+function setStatus(state, label) {
+  const dot = document.getElementById('ghDot');
+  const lbl = document.getElementById('ghLabel');
+  dot.className = 'gh-dot ' + state;
+  lbl.textContent = label || state;
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+function openModal() {
+  const c = ghConfig();
+  document.getElementById('ghUser').value   = c.user   || '';
+  document.getElementById('ghRepo').value   = c.repo   || '';
+  document.getElementById('ghBranch').value = c.branch || 'main';
+  document.getElementById('ghPat').value    = c.pat    || '';
+  document.getElementById('ghModal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('ghModal').classList.add('hidden'); }
+
+document.getElementById('ghStatus').addEventListener('click', openModal);
+document.getElementById('ghModalCancel').addEventListener('click', closeModal);
+document.getElementById('ghModalSave').addEventListener('click', async () => {
+  const user   = document.getElementById('ghUser').value.trim();
+  const repo   = document.getElementById('ghRepo').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const pat    = document.getElementById('ghPat').value.trim();
+  if (!user || !repo || !pat) { alert('Please fill in all fields.'); return; }
+  localStorage.setItem(GH_CFG_KEY, JSON.stringify({ user, repo, branch, pat }));
+  _cache = null; _sha = null;
+  closeModal();
+  try {
+    await ghRead();
+    renderHistory();
+    toast('Connected to ' + repo);
+  } catch(e) {
+    toast('Connection failed: ' + e.message, true);
+  }
+});
+
+// ─── App state ───────────────────────────────────────────────────────────────
+let state = {
+  date: todayISO(),
+  balance: null, annualStop: 18000, ytdPnl: null, dailyPnl: null,
+  simple: [], hedged: []
+};
+
+function todayISO() {
+  const d = new Date(); const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d - tz).toISOString().slice(0,10);
+}
+function blankSimple() {
+  return { asset: '', side: 'Long', entry: null, stop: null, takeProfit: null, riskDollars: null, notes: '' };
+}
+function blankHedged() {
+  return { ticker: '', side: 'Long', qty: null, multiplier: 100, delta: null,
+    premAdj: 0, spot: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
+}
+function num(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const n = Number(v); return isNaN(n) ? null : n;
+}
+function fmt(n, d=2) {
+  if (n===null||n===undefined||isNaN(n)) return '—';
+  return Number(n).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function fmtMoney(n) {
+  if (n===null||n===undefined||isNaN(n)) return '—';
+  const v=Number(n); const s=v<0?'-':'';
+  return s+'$'+Math.abs(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+// ─── Formulas ────────────────────────────────────────────────────────────────
+function calcSimple(p) {
+  const e=num(p.entry), s=num(p.stop), t=num(p.takeProfit), r=num(p.riskDollars);
+  let posSize=null, costBasis=null, rr=null;
+  if (e!=null && s!=null && r!=null && s!==e) { posSize = -r/(s-e); costBasis = posSize*e; }
+  if (e!=null && s!=null && t!=null && s!==e) rr = -(t-e)/(s-e);
+  return { posSize, costBasis, rr };
+}
+function calcHedged(p) {
+  const qty=num(p.qty), m=num(p.multiplier), d=num(p.delta), pa=num(p.premAdj)??0;
+  const spot=num(p.spot), s1=num(p.stop1), q1=num(p.qty1)??0;
+  const s2=num(p.stop2), q2=num(p.qty2)??0, tp=num(p.takeProfit);
+  let cashDelta=null, risk=null, rr=null;
+  if (qty!=null && m!=null && d!=null) cashDelta = d*m*qty - pa;
+  if (cashDelta!=null && spot!=null && (s1!=null||s2!=null)) {
+    const leg1=(s1!=null&&q1!=null)?s1*q1:0;
+    const leg2=(s2!=null&&q2!=null)?s2*q2:0;
+    risk = Math.abs(leg1+leg2) - spot*cashDelta;
+  }
+  if (cashDelta!=null && spot!=null && tp!=null && risk!=null && risk!==0)
+    rr = Math.abs((tp-spot)*cashDelta/risk);
+  return { cashDelta, risk, rr };
+}
+function calcAccount() {
+  const fc=(num(state.annualStop)??0)+(num(state.ytdPnl)??0);
+  return { freeCash: fc, risk1: fc*0.01, risk2: fc*0.02, risk3: fc*0.03 };
+}
+function escapeAttr(s){return String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('entryDate').value = state.date;
+  document.getElementById('balance').value   = state.balance ?? '';
+  document.getElementById('annualStop').value= state.annualStop ?? '';
+  document.getElementById('ytdPnl').value    = state.ytdPnl ?? '';
+  document.getElementById('dailyPnl').value  = state.dailyPnl ?? '';
+  const a = calcAccount();
+  document.getElementById('freeCash').textContent = fmtMoney(a.freeCash);
+  document.getElementById('risk1').textContent    = fmtMoney(a.risk1);
+  document.getElementById('risk2').textContent    = fmtMoney(a.risk2);
+  document.getElementById('risk3').textContent    = fmtMoney(a.risk3);
+  renderSimple(); renderHedged(); renderHistory();
+}
+
+function renderSimple() {
+  const tb=document.getElementById('simpleBody'); tb.innerHTML='';
+  let total=0;
+  if (!state.simple.length) {
+    tb.innerHTML='<tr><td colspan="11" class="empty-state">No simple positions — Add Position or Clone Latest</td></tr>';
+  } else {
+    state.simple.forEach((p,i)=>{
+      const c=calcSimple(p); const r=num(p.riskDollars); if(r!=null) total+=Math.abs(r);
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td><input type="text" data-t="s" data-i="${i}" data-k="asset" value="${escapeAttr(p.asset)}" placeholder="e.g. QQQ" /></td>
+        <td><select data-t="s" data-i="${i}" data-k="side">
+          <option value="Long" ${p.side==='Long'?'selected':''}>Long</option>
+          <option value="Short" ${p.side==='Short'?'selected':''}>Short</option>
+        </select></td>
+        <td><input type="number" step="any" data-t="s" data-i="${i}" data-k="entry" value="${p.entry??''}" /></td>
+        <td><input type="number" step="any" data-t="s" data-i="${i}" data-k="stop" value="${p.stop??''}" /></td>
+        <td><input type="number" step="any" data-t="s" data-i="${i}" data-k="takeProfit" value="${p.takeProfit??''}" /></td>
+        <td><input type="number" step="any" data-t="s" data-i="${i}" data-k="riskDollars" value="${p.riskDollars??''}" /></td>
+        <td class="computed">${c.posSize!=null?fmt(c.posSize,2):'—'}</td>
+        <td class="computed">${c.costBasis!=null?fmtMoney(c.costBasis):'—'}</td>
+        <td class="computed ${c.rr!=null&&c.rr>=1?'pos':c.rr!=null&&c.rr<1?'neg':''}">${c.rr!=null?fmt(c.rr,2)+'x':'—'}</td>
+        <td><input type="text" data-t="s" data-i="${i}" data-k="notes" value="${escapeAttr(p.notes)}" /></td>
+        <td><button class="icon-btn" data-delsimple="${i}" title="Delete">✕</button></td>`;
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('simpleRiskSummary').textContent =
+    state.simple.length ? `${state.simple.length} • total risk ${fmtMoney(total)}` : '';
+}
+
+function renderHedged() {
+  const tb=document.getElementById('hedgedBody'); tb.innerHTML='';
+  let total=0;
+  if (!state.hedged.length) {
+    tb.innerHTML='<tr><td colspan="16" class="empty-state">No hedged positions — Add Hedged / Options</td></tr>';
+  } else {
+    state.hedged.forEach((p,i)=>{
+      const c=calcHedged(p); if(c.risk!=null) total+=Math.abs(c.risk);
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td><input type="text" data-t="h" data-i="${i}" data-k="ticker" value="${escapeAttr(p.ticker)}" placeholder="e.g. TLT" /></td>
+        <td><select data-t="h" data-i="${i}" data-k="side">
+          <option value="Long" ${p.side==='Long'?'selected':''}>Long</option>
+          <option value="Short" ${p.side==='Short'?'selected':''}>Short</option>
+        </select></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="qty" value="${p.qty??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="multiplier" value="${p.multiplier??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="delta" value="${p.delta??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="premAdj" value="${p.premAdj??''}" /></td>
+        <td class="computed">${c.cashDelta!=null?fmt(c.cashDelta,2):'—'}</td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="spot" value="${p.spot??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="stop1" value="${p.stop1??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="qty1" value="${p.qty1??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="stop2" value="${p.stop2??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="qty2" value="${p.qty2??''}" /></td>
+        <td><input type="number" step="any" data-t="h" data-i="${i}" data-k="takeProfit" value="${p.takeProfit??''}" /></td>
+        <td class="computed ${c.risk!=null&&c.risk<0?'neg':''}">${c.risk!=null?fmtMoney(c.risk):'—'}</td>
+        <td class="computed ${c.rr!=null&&c.rr>=1?'pos':c.rr!=null&&c.rr<1?'neg':''}">${c.rr!=null?fmt(c.rr,2)+'x':'—'}</td>
+        <td><button class="icon-btn" data-delhedged="${i}" title="Delete">✕</button></td>`;
+      tb.appendChild(tr);
+    });
+  }
+  document.getElementById('hedgedRiskSummary').textContent =
+    state.hedged.length ? `${state.hedged.length} • total risk ${fmtMoney(total)}` : '';
+}
+
+function renderHistory() {
+  const all = _cache || {};
+  const dates = Object.keys(all).sort().reverse();
+  const list = document.getElementById('historyList'); list.innerHTML='';
+  document.getElementById('historyCount').textContent = dates.length ? `${dates.length} snapshot${dates.length>1?'s':''}` : '';
+  if (!dates.length) { list.innerHTML='<div class="empty-state">No snapshots saved yet</div>'; return; }
+  dates.forEach(d=>{
+    const s=all[d]; const item=document.createElement('div'); item.className='history-item';
+    const nS=(s.simple||[]).length, nH=(s.hedged||[]).length;
+    const dp=num(s.dailyPnl);
+    const dpL=dp==null?'':`<span style="color:${dp>=0?'var(--green)':'var(--red)'}">${dp>=0?'+':''}${fmtMoney(dp)}</span>`;
+    item.innerHTML=`
+      <div class="date">${d}</div>
+      <div class="summary">${nS} simple, ${nH} hedged ${dpL?'• '+dpL:''}${s.balance?' • bal '+fmtMoney(s.balance):''}</div>
+      <div class="actions">
+        <button class="btn" data-load="${d}">Load</button>
+        <button class="btn btn-danger" data-delsnap="${d}">Delete</button>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+// ─── Account inputs ───────────────────────────────────────────────────────────
+document.getElementById('entryDate').addEventListener('change', e=>{ state.date=e.target.value; });
+['balance','annualStop','ytdPnl','dailyPnl'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    state[id] = e.target.value===''?null:Number(e.target.value);
+    if (id==='annualStop'||id==='ytdPnl') {
+      const a=calcAccount();
+      document.getElementById('freeCash').textContent=fmtMoney(a.freeCash);
+      document.getElementById('risk1').textContent=fmtMoney(a.risk1);
+      document.getElementById('risk2').textContent=fmtMoney(a.risk2);
+      document.getElementById('risk3').textContent=fmtMoney(a.risk3);
+    }
+  });
+});
+
+// ─── Table binding ────────────────────────────────────────────────────────────
+function bindTable(bodyId, arrKey) {
+  const tb=document.getElementById(bodyId);
+  tb.addEventListener('input', e=>{
+    const i=e.target.dataset.i, k=e.target.dataset.k; if(i===undefined||!k) return;
+    let v=e.target.value;
+    const numKeys=['entry','stop','takeProfit','riskDollars','qty','multiplier','delta','premAdj','spot','stop1','qty1','stop2','qty2'];
+    if(numKeys.includes(k)) v=v===''?null:Number(v);
+    state[arrKey][Number(i)][k]=v;
+    if(arrKey==='simple') renderSimple(); else renderHedged();
+  });
+  tb.addEventListener('change', e=>{
+    if(e.target.dataset.k==='side') {
+      state[arrKey][Number(e.target.dataset.i)].side=e.target.value;
+      if(arrKey==='simple') renderSimple(); else renderHedged();
+    }
+  });
+  tb.addEventListener('click', e=>{
+    const ds=e.target.dataset.delsimple??e.target.dataset.delhedged;
+    if(ds!==undefined) { state[arrKey].splice(Number(ds),1); if(arrKey==='simple') renderSimple(); else renderHedged(); }
+  });
+}
+bindTable('simpleBody','simple');
+bindTable('hedgedBody','hedged');
+
+document.getElementById('btnAddSimple').addEventListener('click',()=>{ state.simple.push(blankSimple()); renderSimple(); });
+document.getElementById('btnAddHedged').addEventListener('click',()=>{ state.hedged.push(blankHedged()); renderHedged(); });
+
+// ─── Save ─────────────────────────────────────────────────────────────────────
+document.getElementById('btnSave').addEventListener('click', async ()=>{
+  if (!state.date) { toast('Pick a date first',true); return; }
+  let all;
+  try { all = await ensureLoaded(); } catch(e) { return; }
+  if (all[state.date] && !confirm(`Snapshot for ${state.date} exists. Overwrite?`)) return;
+  all[state.date] = JSON.parse(JSON.stringify({
+    balance: state.balance, annualStop: state.annualStop, ytdPnl: state.ytdPnl,
+    dailyPnl: state.dailyPnl, simple: state.simple, hedged: state.hedged,
+    savedAt: new Date().toISOString()
+  }));
+  try { await ghWrite(all); toast(`Saved ${state.date}`); renderHistory(); }
+  catch(e) { toast('Save failed: '+e.message, true); }
+});
+
+// ─── Clone Latest ─────────────────────────────────────────────────────────────
+document.getElementById('btnCloneYesterday').addEventListener('click', async ()=>{
+  let all;
+  try { all = await ensureLoaded(); } catch(e) { return; }
+  const dates=Object.keys(all).sort().reverse().filter(d=>d!==state.date);
+  if (!dates.length) { toast('Nothing to clone',true); return; }
+  const src=all[dates[0]];
+  state.balance   = src.balance   ?? state.balance;
+  state.annualStop= src.annualStop?? state.annualStop;
+  state.ytdPnl    = src.ytdPnl    ?? state.ytdPnl;
+  state.dailyPnl  = null;
+  state.simple    = JSON.parse(JSON.stringify(src.simple||[]));
+  state.hedged    = JSON.parse(JSON.stringify(src.hedged||[]));
+  render(); toast(`Cloned ${dates[0]} — adjust stops & save`);
+});
+
+// ─── Clear ────────────────────────────────────────────────────────────────────
+document.getElementById('btnClear').addEventListener('click',()=>{
+  if(!confirm('Clear current form? (snapshots untouched)')) return;
+  state={date:todayISO(),balance:null,annualStop:18000,ytdPnl:null,dailyPnl:null,simple:[],hedged:[]};
+  render();
+});
+
+// ─── Export ───────────────────────────────────────────────────────────────────
+document.getElementById('btnExport').addEventListener('click',()=>{
+  const data = _cache || {};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`trading-journal-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Exported');
+});
+
+// ─── Import ───────────────────────────────────────────────────────────────────
+document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=async ev=>{
+    try {
+      const data=JSON.parse(ev.target.result);
+      let all;
+      try { all = await ensureLoaded(); } catch(err) { return; }
+      const merge=confirm('Merge with existing? (Cancel = replace all)');
+      const updated = merge ? Object.assign({}, all, data) : data;
+      await ghWrite(updated);
+      toast(`Imported ${Object.keys(data).length} snapshots`); renderHistory();
+    } catch(err) { toast('Import failed: '+err.message,true); }
+  };
+  r.readAsText(f); e.target.value='';
+});
+
+// ─── History actions ──────────────────────────────────────────────────────────
+document.getElementById('historyList').addEventListener('click', async e=>{
+  const load=e.target.dataset.load, del=e.target.dataset.delsnap;
+  if (load) {
+    const all=_cache||{}; const s=all[load]; if(!s) return;
+    state={date:load,balance:s.balance??null,annualStop:s.annualStop??null,
+      ytdPnl:s.ytdPnl??null,dailyPnl:s.dailyPnl??null,
+      simple:JSON.parse(JSON.stringify(s.simple||[])),
+      hedged:JSON.parse(JSON.stringify(s.hedged||[]))};
+    render(); toast(`Loaded ${load}`);
+  }
+  if (del) {
+    if(!confirm(`Delete ${del}?`)) return;
+    let all;
+    try { all=await ensureLoaded(); } catch(err) { return; }
+    delete all[del];
+    try { await ghWrite(all); renderHistory(); toast(`Deleted ${del}`); }
+    catch(e) { toast('Delete failed: '+e.message,true); }
+  }
+});
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, err=false) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.toggle('error',err); el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.getElementById('entryDate').value = todayISO();
+if (ghConfigured()) {
+  setStatus('busy', 'Connecting…');
+  ghRead().then(()=>{ renderHistory(); }).catch(()=>{});
+} else {
+  setStatus('', 'Not connected');
+  openModal();
+}
+render();
+</script>
+</body>
+</html>
