@@ -154,7 +154,7 @@ document.getElementById('fI').addEventListener('change',async function(e){var f=
 document.getElementById('hL').addEventListener('click',async function(e){var ld=e.target.dataset.ld,dl=e.target.dataset.dl;if(ld){var snap=(_c||{})[ld];if(!snap)return;s=JSON.parse(JSON.stringify(snap));s.date=ld;if(!s.simple)s.simple=[];if(!s.hedged)s.hedged=[];render();setTimeout(function(){var el=document.querySelector('#sB input,#hB input');if(el)el.focus()},100);toast('Loaded '+ld)}if(dl){if(!confirm('Delete?'))return;var all;try{all=await el()}catch(err){return}delete all[dl];try{await gw(all);rh();toast('Deleted '+dl)}catch(e){toast('Delete failed','err')}}});
 var _tt;function toast(m,e){var el=document.getElementById('toast');el.textContent=m;el.className='toast'+(e?' err':'')+' show';clearTimeout(_tt);_tt=setTimeout(function(){el.className='toast'},3000)}
 document.getElementById('eD').value=ti();
-if(!localStorage.getItem(CK)){localStorage.setItem(CK,JSON.stringify({user:DU,repo:DR,branch:DB,pat:'PAT_PLACEHOLDER'}))}
+if(!localStorage.getItem(CK)){localStorage.setItem(CK,JSON.stringify({user:DU,repo:DR,branch:DB,pat:''}))}
 st('busy','Loading...');gr().then(function(){rh();st('ok');render()}).catch(function(){rh();st('ok');render()});
 </script>
 </body>
