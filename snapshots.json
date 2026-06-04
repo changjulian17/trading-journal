@@ -1,7 +1,22 @@
 {
   "2026-06-04": {
     "simple": [],
-    "hedged": [],
-    "savedAt": "2026-06-04T07:46:59.176Z"
+    "hedged": [
+      {
+        "ticker": "xlk",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".53",
+        "premAdj": "6",
+        "spot": "100",
+        "stop1": "50",
+        "qty1": "50",
+        "stop2": "50",
+        "qty2": "50",
+        "takeProfit": null
+      }
+    ],
+    "savedAt": "2026-06-04T08:02:12.176Z"
   }
 }
