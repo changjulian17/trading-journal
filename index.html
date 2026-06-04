@@ -27,10 +27,12 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 .ff{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .ff label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block}
 .ff input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:12px 10px;border-radius:6px;font-size:16px;width:100%;font-family:Menlo,monospace;min-height:var(--touch)}
-.ff input:invalid{border-color:var(--red)}.ff input:valid{border-color:var(--green)}
-.ff .v{padding:12px 0;font-size:16px;font-family:Menlo,monospace;color:var(--accent);font-weight:600;min-height:28px}
-.ff .v.n{color:var(--red)}.ff .v.p{color:var(--green)}.ff .v.md{color:var(--muted)}
-.em{text-align:center;padding:24px;color:var(--muted);font-size:14px}.err{color:var(--red);font-size:11px;margin-top:2px}
+.cr{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
+.cv{flex:1;min-width:70px}.cv .cl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;display:block}
+.cv .cnv{padding:8px 0;font-size:15px;font-family:Menlo,monospace;font-weight:600;min-height:24px}
+.cv .cnv.p{color:var(--green)}.cv .cnv.n{color:var(--red)}.cv .cnv.md{color:var(--muted)}
+.err{color:var(--red);font-size:11px;margin-top:4px;text-align:center}
+.em{text-align:center;padding:24px;color:var(--muted);font-size:14px}
 .hl{max-height:360px;overflow-y:auto}.hi{padding:12px 14px;border-bottom:1px solid var(--border)}.hi:last-child{border-bottom:none}
 .hi .h2{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .hi .da{font-weight:600;font-family:Menlo,monospace;font-size:14px}
@@ -51,7 +53,7 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 </head>
 <body>
 <div class="modal-b h" id="ghM">
-  <div class="modal"><h2>Connect to GitHub</h2><p>Snapshots stored as <tt>snapshots.json</tt> in your repo. Config stored in browser only.</p>
+  <div class="modal"><h2>Connect to GitHub</h2><p>Snapshots stored as snapshots.json. Config in browser only.</p>
   <label>GitHub Username</label><input type="text" id="ghUser" placeholder="johndoe" autocomplete="off" />
   <label>Repository Name</label><input type="text" id="ghRepo" placeholder="trading-journal" autocomplete="off" />
   <label>Branch</label><input type="text" id="ghBranch" placeholder="main" autocomplete="off" />
@@ -61,14 +63,8 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 </div>
 <header><h1>Trading Journal</h1><div style="display:flex;align-items:center;gap:8px"><input type="date" id="eD" style="background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-size:14px;min-height:44px" /><div class="gs" id="ghS"><div class="gd" id="ghD"></div><span id="ghL" style="font-size:11px">Not</span></div></div></header>
 <main>
-<div class="tb">
-  <button class="btn bp" id="bS">Save</button>
-  <button class="btn" id="bCY">Clone Yesterday</button>
-</div>
-<div class="bs">
-  <button class="btn" id="bAS">+Simple</button>
-  <button class="btn" id="bAH">+Options</button>
-</div>
+<div class="tb"><button class="btn bp" id="bS">Save</button><button class="btn" id="bCY">Clone Yesterday</button></div>
+<div class="bs"><button class="btn" id="bAS">+Simple</button><button class="btn" id="bAH">+Options</button></div>
 <div class="sec"><div class="sh"><span>Simple Positions</span><span id="sRS" style="font-size:12px;color:var(--muted)"></span></div><div class="sb" id="sB"></div></div>
 <div class="sec"><div class="sh"><span>Hedged / Options</span><span id="hRS" style="font-size:12px;color:var(--muted)"></span></div><div class="sb" id="hB"></div></div>
 <div class="sec"><div class="sh"><span>Snapshots</span><span id="hC" style="font-size:12px;color:var(--muted)"></span></div><div class="hl" id="hL"></div></div>
@@ -76,7 +72,7 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 </main>
 <div class="toast" id="toast"></div>
 <script>
-// Config
+// --- Config ---
 var CK='tjG',DU='changjulian17',DR='trading-journal',DB='main';
 function gc(){try{return JSON.parse(localStorage.getItem(CK))||{}}catch(e){return{}}}
 function hp(){return !!gc().pat}
@@ -93,59 +89,59 @@ document.getElementById('ghMC').addEventListener('click',cm);
 document.getElementById('ghMS').addEventListener('click',async function(){var u=document.getElementById('ghUser').value.trim(),r=document.getElementById('ghRepo').value.trim(),b=document.getElementById('ghBranch').value.trim()||'main',p=document.getElementById('ghPat').value.trim();if(!u||!r||!p){alert('Fill all fields');return}localStorage.setItem(CK,JSON.stringify({user:u,repo:r,branch:b,pat:p}));_c=null;_s=null;cm();try{await gr();rh();toast('Connected to '+r)}catch(e){toast('Failed','err')}});
 function om(){var c=gc();document.getElementById('ghUser').value=c.user||DU;document.getElementById('ghRepo').value=c.repo||DR;document.getElementById('ghBranch').value=c.branch||DB;document.getElementById('ghPat').value=c.pat||'';document.getElementById('ghM').classList.remove('h')}
 function cm(){document.getElementById('ghM').classList.add('h')}
-// State
+// --- State ---
 var s={date:ti(),simple:[],hedged:[]};
 function ti(){var d=new Date(),tz=d.getTimezoneOffset()*6e4;return new Date(d-tz).toISOString().slice(0,10)}
 function bs(){return{asset:'',side:'Long',entry:null,totalQty:null,stop1:null,qty1:null,stop2:null,qty2:null,takeProfit:null,notes:''}}
 function bh(){return{ticker:'',side:'Long',qty:null,multiplier:100,delta:null,premAdj:0,spot:null,stop1:null,qty1:null,stop2:null,qty2:null,takeProfit:null}}
 function n(v){if(v===null||v===void 0||v==='')return null;var x=Number(v);return isNaN(x)?null:x}
-function vl(v){if(v===''||v===null||v===void 0)return true;var x=Number(v);return !isNaN(x)&&x>=0}
 function fm(x,d){if(x===null||x===void 0||isNaN(x))return(String.fromCharCode(8212));return Number(x).toLocaleString('en-GB',{minimumFractionDigits:d||2,maximumFractionDigits:d||2})}
 function $m(x){if(x===null||x===void 0||isNaN(x))return(String.fromCharCode(8212));var v=Number(x);return (v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-// Risk calc
-function cS(p){var e=n(p.entry),sp1=n(p.stop1),q1=n(p.qty1)||0,sp2=n(p.stop2),q2=n(p.qty2)||0,tq=n(p.totalQty),tp=n(p.takeProfit);var rd=null,wt=null,cb=null,rr=null;if(e!=null&&sp1!=null&&q1>0){rd=Math.abs(e-sp1)*q1;wt=q1;if(sp2!=null&&q2>0){rd+=Math.abs(e-sp2)*q2;wt+=q2}}if(e!=null&&sp1!=null&&tk==0&&tp!=null&&sp1!==e)rr=-(tp-e)/(sp1-e);return{ra:rd,q:wt,cb:e*(wt||0),rr:rr,vq:tq!=null&&wt!=null?Math.abs(wt-tq)<0.001:true}}
+// --- Calc ---
+function cS(p){var e=n(p.entry),sp1=n(p.stop1),q1=n(p.qty1)||0,sp2=n(p.stop2),q2=n(p.qty2)||0,tq=n(p.totalQty),tp=n(p.takeProfit);var rd=null,wt=null,cb=null,rr=null;if(e!=null&&sp1!=null&&q1>0){rd=Math.abs(e-sp1)*q1;wt=q1;if(sp2!=null&&q2>0){rd+=Math.abs(e-sp2)*q2;wt+=q2}}if(e!=null&&sp1!=null&&tp!=null&&sp1!==e)rr=-(tp-e)/(sp1-e);return{ra:rd,q:wt,cb:e*(wt||0),rr:rr,vq:tq!=null&&wt!=null?Math.abs(wt-tq)<0.001:true}}
 function cH(p){var q=n(p.qty),m=n(p.multiplier),d=n(p.delta),pa=n(p.premAdj)||0,sp=n(p.spot),s1=n(p.stop1),q1=n(p.qty1)||0,s2=n(p.stop2),q2=n(p.qty2)||0,tp=n(p.takeProfit);var cd=null,risk=null,rr=null;if(q!=null&&m!=null&&d!=null)cd=d*m*q-pa;if(cd!=null&&sp!=null&&(s1!=null||s2!=null)){var l1=(s1!=null&&q1!=null)?s1*q1:0,l2=(s2!=null&&q2!=null)?s2*q2:0;risk=Math.abs(l1+l2)-sp*cd}if(cd!=null&&sp!=null&&tp!=null&&risk!=null&&risk!==0)rr=Math.abs((tp-sp)*cd/risk);return{cd:cd,risk:risk,rr:rr}}
-// Render
+// --- Render (full rebuild) ---
 function render(){document.getElementById('eD').value=s.date;rS();rH();rh()}
-function rS(){var c=document.getElementById('sB');c.innerHTML='';var t=0;if(!s.simple.length){c.innerHTML='<div class="em">Tap +Simple</div>';return}s.simple.forEach(function(p,i){var r=cS(p);if(r.ra)t+=Math.abs(r.ra);var ve=r.vq?true:false;c.innerHTML+='<div class="pc"><div class="ch"><div class="ar"><input type="text" data-si="'+i+'" data-sk="asset" value="'+esc(p.asset)+'" placeholder="QQQ" autocomplete="off"/><select data-si="'+i+'" data-sk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select></div><button class="db" data-ds="'+i+'">X</button></div>'
-+'<div class="ff"><label>Entry</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-si="'+i+'" data-sk="entry" value="'+(p.entry||'')+'" /></div>'
-+'<div class="ff"><label>Total Qty</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-si="'+i+'" data-sk="totalQty" value="'+(p.totalQty||'')+'"/></div>'
-+'<div class="ff"><label>Stop 1</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-si="'+i+'" data-sk="stop1" value="'+(p.stop1||'')+'"/></div>'
-+'<div class="ff"><label>Qty 1</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-si="'+i+'" data-sk="qty1" value="'+(p.qty1||'')+'"/></div>'
-+'<div class="ff"><label>Stop 2</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-si="'+i+'" data-sk="stop2" value="'+(p.stop2||'')+'"/></div>'
-+'<div class="ff"><label>Qty 2</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-si="'+i+'" data-sk="qty2" value="'+(p.qty2||'')+'"/></div>'
-+'<div class="ff"><label>Take Profit</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-si="'+i+'" data-sk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
+function rS(){var c=document.getElementById('sB');c.innerHTML='';var t=0;if(!s.simple.length){c.innerHTML='<div class="em">Tap +Simple</div>';return}s.simple.forEach(function(p,i){var r=cS(p);if(r.ra)t+=Math.abs(r.ra);var ve=r.vq,rv='<div class="pc" data-si="'+i+'"><div class="ch"><div class="ar"><input type="text" data-si="'+i+'" data-sk="asset" value="'+esc(p.asset)+'" placeholder="QQQ" autocomplete="off"/><select data-si="'+i+'" data-sk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select></div><button class="db" data-ds="'+i+'">X</button></div>'
++'<div class="ff"><label>Entry</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="entry" value="'+(p.entry||'')+'" /></div>'
++'<div class="ff"><label>Total Qty</label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="totalQty" value="'+(p.totalQty||'')+'"/></div>'
++'<div class="ff"><label>Stop 1</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="stop1" value="'+(p.stop1||'')+'"/></div>'
++'<div class="ff"><label>Qty 1</label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="qty1" value="'+(p.qty1||'')+'"/></div>'
++'<div class="ff"><label>Stop 2</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="stop2" value="'+(p.stop2||'')+'"/></div>'
++'<div class="ff"><label>Qty 2</label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="qty2" value="'+(p.qty2||'')+'"/></div>'
++'<div class="ff"><label>Take Profit</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
 +'<div class="ff"><label>Notes</label><input type="text" data-si="'+i+'" data-sk="notes" value="'+esc(p.notes)+'" autocomplete="off"/></div>'
-+'<div class="ff"><div style="display:flex;gap:8px;flex-wrap:wrap">'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">Risk $</span><div class="v '+(r.ra!=null?'p':'md')+'">'+(r.ra!=null?$m(r.ra):String.fromCharCode(8212))+'</div></div>'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">Cost</span><div class="v '+(r.cb!=null?'p':'md')+'">'+(r.cb!=null?$m(r.cb):String.fromCharCode(8212))+'</div></div>'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">R/R</span><div class="v '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')+'">'+(r.rr!=null?fm(r.rr,2)+'x':String.fromCharCode(8212))+'</div></div>'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">Tot Qty</span><div class="v '+(r.q!=null?'p':'md')+'">'+(r.q!=null?fm(r.q,2):String.fromCharCode(8212))+'</div></div>'
-+(ve?'':'<div style="flex:0 0 100%"><span class="err">Qty sum differs from total</span></div>')
-+'</div></div></div>'});document.getElementById('sRS').textContent=s.simple.length?s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):''):''}
-function rH(){var c=document.getElementById('hB');c.innerHTML='';var t=0;if(!s.hedged.length){c.innerHTML='<div class="em">Tap +Options</div>';return}s.hedged.forEach(function(p,i){var r=cH(p);if(r.risk)t+=Math.abs(r.risk);c.innerHTML+='<div class="pc"><div class="ch"><div class="ar"><input type="text" data-hi="'+i+'" data-hk="ticker" value="'+esc(p.ticker)+'" placeholder="TLT" autocomplete="off"/><select data-hi="'+i+'" data-hk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select></div><button class="db" data-dh="'+i+'">X</button></div>'
-+'<div class="ff"><label>Spot</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-hi="'+i+'" data-hk="spot" value="'+(p.spot||'')+'"/></div>'
-+'<div class="ff"><label>Qty</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-hi="'+i+'" data-hk="qty" value="'+(p.qty||'')+'"/></div>'
-+'<div class="ff"><label>Multiplier</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-hi="'+i+'" data-hk="multiplier" value="'+(p.multiplier||100)+'"/></div>'
-+'<div class="ff"><label>Delta</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-hi="'+i+'" data-hk="delta" value="'+(p.delta||'')+'"/></div>'
-+'<div class="ff"><label>Prem Adj</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-hi="'+i+'" data-hk="premAdj" value="'+(p.premAdj||'')+'"/></div>'
-+'<div class="ff"><label>Stop 1</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-hi="'+i+'" data-hk="stop1" value="'+(p.stop1||'')+'"/></div>'
-+'<div class="ff"><label>Qty 1</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-hi="'+i+'" data-hk="qty1" value="'+(p.qty1||'')+'"/></div>'
-+'<div class="ff"><label>Stop 2</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-hi="'+i+'" data-hk="stop2" value="'+(p.stop2||'')+'"/></div>'
-+'<div class="ff"><label>Qty 2</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-hi="'+i+'" data-hk="qty2" value="'+(p.qty2||'')+'"/></div>'
-+'<div class="ff"><label>Take Profit</label><input type="text" inputmode="decimal" pattern="[0-9]*\\.?[0-9]*" data-hi="'+i+'" data-hk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
-+'<div class="ff"><div style="display:flex;gap:8px;flex-wrap:wrap">'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">Cash D</span><div class="v '+(r.cd!=null?'p':'md')+'">'+(r.cd!=null?fm(r.cd,2):String.fromCharCode(8212))+'</div></div>'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">Risk</span><div class="v '+(r.risk!=null?'p':'md')+'">'+(r.risk!=null?$m(r.risk):String.fromCharCode(8212))+'</div></div>'
-+'<div style="flex:1;min-width:80px"><span class="v md" style="font-size:10px">R/R</span><div class="v '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')+'">'+(r.rr!=null?fm(r.rr,2)+'x':String.fromCharCode(8212))+'</div></div>'
-+'</div></div></div>'});document.getElementById('hRS').textContent=s.hedged.length?s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):''):''}
++'<div class="cr"><div class="cv"><span class="cl">Risk $</span><div class="cnv '+(r.ra!=null?'p':'md')+'" data-si="'+i+'" data-sk="rRisk">'+(r.ra!=null?$m(r.ra):D)+'</div></div>'
++'<div class="cv"><span class="cl">Cost</span><div class="cnv '+(r.cb!=null?'p':'md')+'" data-si="'+i+'" data-sk="rCost">'+(r.cb!=null?$m(r.cb):D)+'</div></div>'
++'<div class="cv"><span class="cl">R/R</span><div class="cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')+'" data-si="'+i+'" data-sk="rRR">'+(r.rr!=null?fm(r.rr,2)+'x':D)+'</div></div>'
++'<div class="cv"><span class="cl">Qty</span><div class="cnv '+(r.q!=null?'p':'md')+'" data-si="'+i+'" data-sk="rQty">'+(r.q!=null?fm(r.q,2):D)+'</div></div></div>'
++(ve?'':'<div class="err" data-si="'+i+'" data-sk="rErr">Qty sum '+(r.q!=null?fm(r.q,2):'?')+' \u2260 total '+(p.totalQty||'?')+'</div>')
++'</div>';c.innerHTML+=rv});document.getElementById('sRS').textContent=s.simple.length?s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):''):''}
+// --- Update computed values inline (no DOM rebuild) ---
+function uS(i){var p=s.simple[i],r=cS(p),cr=document.querySelector('.pc[data-si="'+i+'"]');if(!cr)return;var el;el=cr.querySelector('[data-sk="rRisk"]');if(el){el.textContent=r.ra!=null?$m(r.ra):D;el.className='cnv '+(r.ra!=null?'p':'md')}el=cr.querySelector('[data-sk="rCost"]');if(el){el.textContent=r.cb!=null?$m(r.cb):D;el.className='cnv '+(r.cb!=null?'p':'md')}el=cr.querySelector('[data-sk="rRR"]');if(el){el.textContent=r.rr!=null?fm(r.rr,2)+'x':D;el.className='cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')}el=cr.querySelector('[data-sk="rQty"]');if(el){el.textContent=r.q!=null?fm(r.q,2):D;el.className='cnv '+(r.q!=null?'p':'md')}el=cr.querySelector('[data-sk="rErr"]');var ve=r.vq;if(ve&&el){el.remove()}else if(!ve){if(!el){var nd=document.createElement('div');nd.className='err';nd.setAttribute('data-si',i);nd.setAttribute('data-sk','rErr');cr.appendChild(nd)}cr.querySelector('[data-sk="rErr"]').textContent='Qty sum '+(r.q!=null?fm(r.q,2):'?')+' \u2260 total '+(p.totalQty||'?')}var t=0;for(var j=0;j<s.simple.length;j++){var rj=cS(s.simple[j]);if(rj.ra)t+=Math.abs(rj.ra)}document.getElementById('sRS').textContent=s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):'')}
+function uH(i){var p=s.hedged[i],r=cH(p),cr=document.querySelector('.pc[data-hi="'+i+'"]');if(!cr)return;var el;el=cr.querySelector('[data-hk="rCD"]');if(el){el.textContent=r.cd!=null?fm(r.cd,2):D;el.className='cnv '+(r.cd!=null?'p':'md')}el=cr.querySelector('[data-hk="rRisk"]');if(el){el.textContent=r.risk!=null?$m(r.risk):D;el.className='cnv '+(r.risk!=null?'p':'md')}el=cr.querySelector('[data-hk="rRR"]');if(el){el.textContent=r.rr!=null?fm(r.rr,2)+'x':D;el.className='cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')}var t=0;for(var j=0;j<s.hedged.length;j++){var rj=cH(s.hedged[j]);if(rj.risk)t+=Math.abs(rj.risk)}document.getElementById('hRS').textContent=s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):'')}
+function rH(){var c=document.getElementById('hB');c.innerHTML='';var t=0;if(!s.hedged.length){c.innerHTML='<div class="em">Tap +Options</div>';return}s.hedged.forEach(function(p,i){var r=cH(p);if(r.risk)t+=Math.abs(r.risk);c.innerHTML+='<div class="pc" data-hi="'+i+'"><div class="ch"><div class="ar"><input type="text" data-hi="'+i+'" data-hk="ticker" value="'+esc(p.ticker)+'" placeholder="TLT" autocomplete="off"/><select data-hi="'+i+'" data-hk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select></div><button class="db" data-dh="'+i+'">X</button></div>'
++'<div class="ff"><label>Spot</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="spot" value="'+(p.spot||'')+'"/></div>'
++'<div class="ff"><label>Qty</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty" value="'+(p.qty||'')+'"/></div>'
++'<div class="ff"><label>Multiplier</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="multiplier" value="'+(p.multiplier||100)+'"/></div>'
++'<div class="ff"><label>Delta</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="delta" value="'+(p.delta||'')+'"/></div>'
++'<div class="ff"><label>Prem Adj</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="premAdj" value="'+(p.premAdj||'')+'"/></div>'
++'<div class="ff"><label>Stop 1</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="stop1" value="'+(p.stop1||'')+'"/></div>'
++'<div class="ff"><label>Qty 1</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty1" value="'+(p.qty1||'')+'"/></div>'
++'<div class="ff"><label>Stop 2</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="stop2" value="'+(p.stop2||'')+'"/></div>'
++'<div class="ff"><label>Qty 2</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty2" value="'+(p.qty2||'')+'"/></div>'
++'<div class="ff"><label>Take Profit</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
++'<div class="cr"><div class="cv"><span class="cl">Cash D</span><div class="cnv '+(r.cd!=null?'p':'md')+'" data-hi="'+i+'" data-hk="rCD">'+(r.cd!=null?fm(r.cd,2):D)+'</div></div>'
++'<div class="cv"><span class="cl">Risk</span><div class="cnv '+(r.risk!=null?'p':'md')+'" data-hi="'+i+'" data-hk="rRisk">'+(r.risk!=null?$m(r.risk):D)+'</div></div>'
++'<div class="cv"><span class="cl">R/R</span><div class="cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')+'" data-hi="'+i+'" data-hk="rRR">'+(r.rr!=null?fm(r.rr,2)+'x':D)+'</div></div></div></div>'});document.getElementById('hRS').textContent=s.hedged.length?s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):''):''}
 function rh(){var all=_c||{},dates=Object.keys(all).sort().reverse(),list=document.getElementById('hL');list.innerHTML='';document.getElementById('hC').textContent=dates.length?dates.length+' snap'+(dates.length>1?'s':''):'';if(!dates.length){list.innerHTML='<div class="em">Empty</div>';return}dates.forEach(function(d){var snap=all[d],nS=(snap.simple||[]).length,nH=(snap.hedged||[]).length;list.innerHTML+='<div class="hi"><div class="h2"><div class="da">'+d+'</div><div class="ac"><button class="btn" data-ld="'+d+'" style="width:auto">Load</button><button class="btn bd" data-dl="'+d+'" style="width:auto">Del</button></div></div><div class="su">'+nS+' s, '+nH+' h'+(snap.savedAt?' @ '+snap.savedAt.slice(11,16):'')+'</div></div>'})}
+// --- Events ---
 document.getElementById('eD').addEventListener('change',function(e){s.date=e.target.value});
-var _dS=null,_dH=null;
-document.getElementById('sB').addEventListener('input',function(e){var i=e.target.dataset.si,k=e.target.dataset.sk;if(i===void 0||!k)return;var v=e.target.value,nk=['entry','totalQty','stop1','qty1','stop2','qty2','takeProfit'];if(nk.indexOf(k)!==-1&&!vl(v)){return}s.simple[Number(i)][k]=v;clearTimeout(_dS);_dS=setTimeout(function(){rS()},300)});
+document.getElementById('sB').addEventListener('input',function(e){var i=e.target.dataset.si,k=e.target.dataset.sk;if(i===void 0||!k)return;var v=e.target.value;s.simple[Number(i)][k]=v;clearTimeout(_dS);_dS=setTimeout(function(){uS(Number(i))},300)});
 document.getElementById('sB').addEventListener('change',function(e){var ds=e.target.dataset.ds;if(ds!==void 0){s.simple.splice(Number(ds),1);rS()}if(e.target.dataset.sk==='side'){s.simple[Number(e.target.dataset.si)].side=e.target.value;rS()}});
-document.getElementById('hB').addEventListener('input',function(e){var i=e.target.dataset.hi,k=e.target.dataset.hk;if(i===void 0||!k)return;var v=e.target.value,nk=['qty','multiplier','delta','premAdj','spot','stop1','qty1','stop2','qty2','takeProfit'];if(nk.indexOf(k)!==-1&&!vl(v)){return}s.hedged[Number(i)][k]=v;clearTimeout(_dH);_dH=setTimeout(function(){rH()},300)});
+var _dS=null,_dH=null;
+document.getElementById('hB').addEventListener('input',function(e){var i=e.target.dataset.hi,k=e.target.dataset.hk;if(i===void 0||!k)return;s.hedged[Number(i)][k]=e.target.value;clearTimeout(_dH);_dH=setTimeout(function(){uH(Number(i))},300)});
 document.getElementById('hB').addEventListener('change',function(e){var dh=e.target.dataset.dh;if(dh!==void 0){s.hedged.splice(Number(dh),1);rH()}if(e.target.dataset.hk==='side'){s.hedged[Number(e.target.dataset.hi)].side=e.target.value;rH()}});
 document.getElementById('bAS').addEventListener('click',function(){s.simple.push(bs());rS()});
 document.getElementById('bAH').addEventListener('click',function(){s.hedged.push(bh());rH()});
