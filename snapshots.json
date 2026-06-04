@@ -21,15 +21,15 @@
         "qty": "10",
         "multiplier": 100,
         "delta": ".53",
-        "premAdj": "6",
+        "premAdj": "1",
         "spot": "100",
         "stop1": "50",
         "qty1": "50",
         "stop2": "50",
         "qty2": "50",
-        "takeProfit": null
+        "takeProfit": "300"
       }
     ],
-    "savedAt": "2026-06-04T08:19:00.610Z"
+    "savedAt": "2026-06-04T08:26:04.821Z"
   }
 }
