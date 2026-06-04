@@ -253,68 +253,92 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── GitHub config (credentials only in localStorage) ───────────────────────
+// ─── GitHub config (read via public raw URL, write via API+PAT) ─────────────
 const GH_CFG_KEY = 'tradingJournal_ghConfig';
+const DEFAULT_USER = 'changjulian17';
+const DEFAULT_REPO = 'trading-journal';
+const DEFAULT_BRANCH = 'main';
 
 function ghConfig() {
   try { return JSON.parse(localStorage.getItem(GH_CFG_KEY)) || {}; }
   catch(e) { return {}; }
 }
-function ghConfigured() {
-  const c = ghConfig(); return !!(c.user && c.repo && c.pat);
+function hasPat() {
+  return !!ghConfig().pat;
 }
 
-// ─── GitHub API helpers ──────────────────────────────────────────────────────
+// ─── Read via public raw URL (no auth needed). Write via GitHub API + PAT. ──
 let _cache = null;   // in-memory snapshot cache
 let _sha   = null;   // current blob SHA for conflict-free writes
 
+function rawUrl() {
+  const { user, repo, branch } = ghConfig();
+  const u = user || DEFAULT_USER;
+  const r = repo || DEFAULT_REPO;
+  const b = branch || DEFAULT_BRANCH;
+  return `https://raw.githubusercontent.com/${u}/${r}/${b}/snapshots.json`;
+}
 function ghHeaders() {
   const { pat } = ghConfig();
   return { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' };
 }
-function ghUrl() {
-  const { user, repo, branch } = ghConfig();
-  const b = branch || 'main';
-  return `https://api.github.com/repos/${user}/${repo}/contents/snapshots.json?ref=${b}`;
-}
 function ghUrlWrite() {
   const { user, repo } = ghConfig();
-  return `https://api.github.com/repos/${user}/${repo}/contents/snapshots.json`;
+  const u = user || DEFAULT_USER;
+  const r = repo || DEFAULT_REPO;
+  return `https://api.github.com/repos/${u}/${r}/contents/snapshots.json`;
 }
 
 async function ghRead() {
   setStatus('busy', 'Loading…');
   try {
-    const res = await fetch(ghUrl(), { headers: ghHeaders() });
-    if (res.status === 404) { _cache = {}; _sha = null; setStatus('connected', ghConfig().repo); return {}; }
-    if (!res.ok) throw new Error(`GitHub ${res.status}`);
-    const json = await res.json();
-    _sha = json.sha;
-    _cache = JSON.parse(atob(json.content.replace(/\n/g,'')));
-    setStatus('connected', ghConfig().repo);
+    const res = await fetch(rawUrl());
+    if (res.status === 404) { _cache = {}; _sha = null; setStatus('connected', (ghConfig().repo || DEFAULT_REPO)); return {}; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    _cache = await res.json();
+    _sha = null;
+    setStatus('connected', (ghConfig().repo || DEFAULT_REPO));
     return _cache;
   } catch(e) {
-    setStatus('error', 'Error: ' + e.message);
-    throw e;
+    _cache = {};
+    setStatus('connected', (ghConfig().repo || DEFAULT_REPO));
+    return {};
   }
 }
 
 async function ghWrite(data) {
+  if (!hasPat()) {
+    toast('Need a GitHub PAT to save — click the status badge to set one up', true);
+    openModal();
+    return;
+  }
   setStatus('busy', 'Saving…');
-  const { branch } = ghConfig();
+  const { user, repo, branch } = ghConfig();
+  const u = user || DEFAULT_USER;
+  const r = repo || DEFAULT_REPO;
+  const b = branch || DEFAULT_BRANCH;
+  // Fetch SHA first for blob update
+  let sha = _sha;
+  if (!sha) {
+    try {
+      const ref = `https://api.github.com/repos/${u}/${r}/contents/snapshots.json?ref=${b}`;
+      const r2 = await fetch(ref, { headers: ghHeaders() });
+      if (r2.ok) { const j = await r2.json(); sha = j.sha; }
+    } catch(e) { /* new file */ }
+  }
   const body = {
     message: `journal: snapshot update ${new Date().toISOString().slice(0,10)}`,
     content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-    branch: branch || 'main'
+    branch: b
   };
-  if (_sha) body.sha = _sha;
+  if (sha) body.sha = sha;
   try {
     const res = await fetch(ghUrlWrite(), { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
-    if (!res.ok) { const t = await res.text(); throw new Error(`GitHub ${res.status}: ${t}`); }
+    if (!res.ok) { const t = await res.text(); throw new Error(`GitHub ${res.status}`); }
     const json = await res.json();
     _sha = json.content.sha;
     _cache = data;
-    setStatus('connected', ghConfig().repo);
+    setStatus('connected', r);
   } catch(e) {
     setStatus('error', 'Save failed: ' + e.message);
     throw e;
@@ -322,7 +346,6 @@ async function ghWrite(data) {
 }
 
 async function ensureLoaded() {
-  if (!ghConfigured()) { openModal(); throw new Error('Not configured'); }
   if (_cache === null) await ghRead();
   return _cache;
 }
@@ -332,20 +355,11 @@ function setStatus(state, label) {
   const dot = document.getElementById('ghDot');
   const lbl = document.getElementById('ghLabel');
   dot.className = 'gh-dot ' + state;
-  lbl.textContent = label || state;
+  const r = ghConfig().repo || DEFAULT_REPO;
+  lbl.textContent = state === 'connected' ? r : (label || state);
 }
 
 // ─── Modal ───────────────────────────────────────────────────────────────────
-function openModal() {
-  const c = ghConfig();
-  document.getElementById('ghUser').value   = c.user   || '';
-  document.getElementById('ghRepo').value   = c.repo   || '';
-  document.getElementById('ghBranch').value = c.branch || 'main';
-  document.getElementById('ghPat').value    = c.pat    || '';
-  document.getElementById('ghModal').classList.remove('hidden');
-}
-function closeModal() { document.getElementById('ghModal').classList.add('hidden'); }
-
 document.getElementById('ghStatus').addEventListener('click', openModal);
 document.getElementById('ghModalCancel').addEventListener('click', closeModal);
 document.getElementById('ghModalSave').addEventListener('click', async () => {
@@ -365,6 +379,17 @@ document.getElementById('ghModalSave').addEventListener('click', async () => {
     toast('Connection failed: ' + e.message, true);
   }
 });
+
+// ─── Modal (auto-fill defaults) ─────────────────────────────────────────────
+function openModal() {
+  const c = ghConfig();
+  document.getElementById('ghUser').value   = c.user   || DEFAULT_USER;
+  document.getElementById('ghRepo').value   = c.repo   || DEFAULT_REPO;
+  document.getElementById('ghBranch').value = c.branch || DEFAULT_BRANCH;
+  document.getElementById('ghPat').value    = c.pat    || '';
+  document.getElementById('ghModal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('ghModal').classList.add('hidden'); }
 
 // ─── App state ───────────────────────────────────────────────────────────────
 let state = {
@@ -674,13 +699,23 @@ function toast(msg, err=false) {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.getElementById('entryDate').value = todayISO();
-if (ghConfigured()) {
-  setStatus('busy', 'Connecting…');
-  ghRead().then(()=>{ renderHistory(); }).catch(()=>{});
-} else {
-  setStatus('', 'Not connected');
-  openModal();
+
+// Seed defaults so the page works without any login
+if (!localStorage.getItem(GH_CFG_KEY)) {
+  localStorage.setItem(GH_CFG_KEY, JSON.stringify({
+    user: DEFAULT_USER, repo: DEFAULT_REPO, branch: DEFAULT_BRANCH, pat: ''
+  }));
 }
+
+// Auto-load from public repo (no PAT needed)
+setStatus('busy', 'Loading…');
+ghRead().then(() => {
+  renderHistory();
+  setStatus('connected', DEFAULT_REPO);
+}).catch(() => {
+  renderHistory();
+  setStatus('connected', DEFAULT_REPO);
+});
 render();
 </script>
 </body>
