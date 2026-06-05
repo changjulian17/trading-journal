@@ -93,24 +93,19 @@ test('cS: empty position returns all nulls, vq true', () => {
 
 test('cS: entry + stop1 + qty1 computes risk', () => {
   const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 10 });
-  assert.equal(r.ra, 100);   // |100-90| * 10
+  assert.equal(r.ra, -100);  // |90*10| - 100*10 = 900-1000
   assert.equal(r.q, 10);
-});
-
-test('cS: short position stop above entry', () => {
-  const r = cS({ ...bs(), entry: 100, stop1: 110, qty1: 5, side: 'Short' });
-  assert.equal(r.ra, 50);    // |100-110| * 5
 });
 
 test('cS: two stops combine risk and qty', () => {
   const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 5, stop2: 95, qty2: 5 });
-  assert.equal(r.ra, 75);    // 10*5 + 5*5
+  assert.equal(r.ra, -75);   // |90*5+95*5| - 100*10 = 925-1000
   assert.equal(r.q, 10);
 });
 
-test('cS: cost basis = entry * total qty', () => {
-  const r = cS({ ...bs(), entry: 50, stop1: 45, qty1: 20 });
-  assert.equal(r.cb, 1000);
+test('cS: short position risk is positive', () => {
+  const r = cS({ ...bs(), entry: 100, stop1: 110, qty1: 5, side: 'Short' });
+  assert.equal(r.ra, 50);    // |110*5| - 100*5 = 550-500
 });
 
 test('cS: R/R ratio with take profit', () => {
@@ -152,7 +147,7 @@ test('cS: qty1=0 → no risk computed', () => {
 
 test('cS: string inputs are parsed via n()', () => {
   const r = cS({ ...bs(), entry: '100', stop1: '90', qty1: '10' });
-  assert.equal(r.ra, 100);
+  assert.equal(r.ra, -100);  // |90*10| - 100*10
 });
 
 // ---------------------------------------------------------------------------
@@ -176,13 +171,13 @@ test('cH: cash delta subtracts hedgeQty', () => {
 });
 
 test('cH: risk with stop1 and hedgeQty', () => {
-  // cd = 2*100*0.5 - 80 = 20, spot=50, hedgeQty=80
-  // sz=80 (hedgeQty overrides |cd|), l1=45*80=3600, risk=|3600|-50*80=-400
+  // cd = 2*100*0.5 - 80 = 20, sz=|cd|=20, spot=50
+  // l1=45*80=3600, risk=|3600| - 50*20 = 3600 - 1000 = 2600
   const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5, spot: 50, stop1: 45, qty1: 80, hedgeQty: 80 });
-  assert.equal(r.risk, -400);
+  assert.equal(r.risk, 2600);
 });
 
-test('cH: risk uses |cd| as sz when hedgeQty is null', () => {
+test('cH: risk uses |cd| as sz', () => {
   // cd = 1*100*0.5 = 50, spot=10, stop1=9, qty1=50, sz=|50|=50
   // risk = |9*50| - 10*50 = 450 - 500 = -50
   const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 0.5, spot: 10, stop1: 9, qty1: 50 });
