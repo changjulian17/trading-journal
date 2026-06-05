@@ -212,67 +212,81 @@ test('cH: two stops sum for risk', () => {
 });
 
 // ---------------------------------------------------------------------------
-// fetchSpot() — Yahoo Finance via AllOrigins proxy
+// fetchSpot() — direct Yahoo Finance with AllOrigins proxy fallback
 // ---------------------------------------------------------------------------
 
-// Helper: build a mock fetch. Each spec is { ok, price } or an Error to throw.
-// The proxy wraps Yahoo JSON as { contents: JSON.stringify(yahooPayload) }.
+// fetchSpot makes up to 2 calls: (1) direct Yahoo, (2) AllOrigins proxy.
+// Direct Yahoo returns raw Yahoo JSON; proxy returns { contents: '...' } wrapper.
+function yahooJson(price) {
+  return price != null
+    ? { chart: { result: [{ meta: { regularMarketPrice: price } }] } }
+    : { chart: { result: [{ meta: {} }] } };
+}
+function directResp(price)  { return { ok: true,  json: async () => yahooJson(price) }; }
+function directFail()       { return { ok: false, json: async () => ({}) }; }
+function proxyResp(price)   { return { ok: true,  json: async () => ({ contents: JSON.stringify(yahooJson(price)) }) }; }
+function proxyFail()        { return { ok: false, json: async () => ({}) }; }
+
 function mockFetch(specs) {
   let idx = 0;
   return async function(url) {
     const spec = specs[idx++];
     if (spec instanceof Error) throw spec;
-    return {
-      ok: spec.ok,
-      json: async () => {
-        const yahoo = spec.price != null
-          ? { chart: { result: [{ meta: { regularMarketPrice: spec.price } }] } }
-          : { chart: { result: [{ meta: {} }] } };
-        return { contents: JSON.stringify(yahoo) };
-      }
-    };
+    return spec;
   };
 }
 
-test('fetchSpot: returns price on success', async () => {
-  const price = await fetchSpot('AAPL', mockFetch([{ ok: true, price: 195.5 }]));
+test('fetchSpot: returns price directly from Yahoo (fast path)', async () => {
+  const price = await fetchSpot('AAPL', mockFetch([directResp(195.5)]));
   assert.equal(price, 195.5);
+});
+
+test('fetchSpot: falls back to proxy when direct returns non-ok', async () => {
+  const price = await fetchSpot('TSLA', mockFetch([directFail(), proxyResp(250)]));
+  assert.equal(price, 250);
+});
+
+test('fetchSpot: falls back to proxy when direct throws (network error)', async () => {
+  const price = await fetchSpot('MSFT', mockFetch([new Error('network'), proxyResp(420)]));
+  assert.equal(price, 420);
+});
+
+test('fetchSpot: falls back to proxy when direct returns null price', async () => {
+  const price = await fetchSpot('SPY', mockFetch([directResp(null), proxyResp(500)]));
+  assert.equal(price, 500);
 });
 
 test('fetchSpot: throws when proxy returns non-ok', async () => {
   await assert.rejects(
-    () => fetchSpot('BAD', mockFetch([{ ok: false }])),
+    () => fetchSpot('BAD', mockFetch([directFail(), proxyFail()])),
     /Proxy error/
   );
 });
 
-test('fetchSpot: throws when proxy throws (network error)', async () => {
+test('fetchSpot: throws when proxy price is null', async () => {
   await assert.rejects(
-    () => fetchSpot('ERR', mockFetch([new Error('network')])),
-    /network/
-  );
-});
-
-test('fetchSpot: throws when price is null in response', async () => {
-  await assert.rejects(
-    () => fetchSpot('NONE', mockFetch([{ ok: true, price: null }])),
+    () => fetchSpot('NONE', mockFetch([directResp(null), proxyResp(null)])),
     { message: 'No price for NONE' }
   );
 });
 
-test('fetchSpot: throws when contents JSON is malformed', async () => {
-  const badFetch = async () => ({ ok: true, json: async () => ({ contents: 'not-json' }) });
+test('fetchSpot: throws when proxy contents JSON is malformed', async () => {
+  const badProxy = { ok: true, json: async () => ({ contents: 'not-json' }) };
   await assert.rejects(
-    () => fetchSpot('X', badFetch),
+    () => fetchSpot('X', mockFetch([directFail(), badProxy])),
     { message: 'No price for X' }
   );
 });
 
-test('fetchSpot: URL routes through allorigins proxy with encoded ticker', async () => {
+test('fetchSpot: hits Yahoo directly first, then proxy on failure', async () => {
   const urls = [];
-  const spy = async (url) => { urls.push(url); return { ok: true, json: async () => ({ contents: JSON.stringify({ chart: { result: [{ meta: { regularMarketPrice: 1 } }] } }) }) }; };
+  const spy = async (url) => {
+    urls.push(url);
+    if (urls.length === 1) return directFail();
+    return proxyResp(1);
+  };
   await fetchSpot('BRK.B', spy);
-  assert.ok(urls[0].includes('allorigins.win'), 'routes through allorigins proxy');
-  assert.ok(urls[0].includes('BRK.B'), 'ticker present in proxy URL');
-  assert.ok(urls[0].includes('query1.finance.yahoo.com'), 'Yahoo URL embedded in proxy URL');
+  assert.ok(urls[0].includes('query1.finance.yahoo.com') && !urls[0].includes('allorigins'), 'first call is direct Yahoo');
+  assert.ok(urls[1].includes('allorigins.win'), 'second call routes through proxy');
+  assert.ok(urls[1].includes('BRK.B'), 'ticker present in proxy URL');
 });
