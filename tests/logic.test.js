@@ -165,14 +165,19 @@ test('cH: empty position returns all nulls', () => {
   assert.equal(r.rr, null);
 });
 
-test('cH: cash delta = qty * multiplier * delta', () => {
+test('cH: cash delta = qty * multiplier * delta (no hedge)', () => {
   const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5 });
-  assert.equal(r.cd, 100);  // 2 * 100 * 0.5
+  assert.equal(r.cd, 100);  // 2 * 100 * 0.5 - 0
+});
+
+test('cH: cash delta subtracts hedgeQty', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5, hedgeQty: 80 });
+  assert.equal(r.cd, 20);  // 2 * 100 * 0.5 - 80
 });
 
 test('cH: risk with stop1 and hedgeQty', () => {
-  // cd=100, spot=50, hedgeQty=80, stop1=45, qty1=80
-  // l1 = 45*80 = 3600, l2=0, sz=80, risk = |3600| - 50*80 = 3600 - 4000 = -400
+  // cd = 2*100*0.5 - 80 = 20, spot=50, hedgeQty=80
+  // sz=80 (hedgeQty overrides |cd|), l1=45*80=3600, risk=|3600|-50*80=-400
   const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5, spot: 50, stop1: 45, qty1: 80, hedgeQty: 80 });
   assert.equal(r.risk, -400);
 });
