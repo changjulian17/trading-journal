@@ -212,11 +212,11 @@ test('cH: two stops sum for risk', () => {
 });
 
 // ---------------------------------------------------------------------------
-// fetchSpot() — Yahoo Finance price fetcher
+// fetchSpot() — Yahoo Finance via AllOrigins proxy
 // ---------------------------------------------------------------------------
 
-// Helper: build a mock fetch that replays a sequence of response specs.
-// Each spec is { ok, price } for a successful HTTP response, or an Error to throw.
+// Helper: build a mock fetch. Each spec is { ok, price } or an Error to throw.
+// The proxy wraps Yahoo JSON as { contents: JSON.stringify(yahooPayload) }.
 function mockFetch(specs) {
   let idx = 0;
   return async function(url) {
@@ -225,59 +225,54 @@ function mockFetch(specs) {
     return {
       ok: spec.ok,
       json: async () => {
-        if (spec.price == null) return { chart: { result: [{ meta: {} }] } };
-        return { chart: { result: [{ meta: { regularMarketPrice: spec.price } }] } };
+        const yahoo = spec.price != null
+          ? { chart: { result: [{ meta: { regularMarketPrice: spec.price } }] } }
+          : { chart: { result: [{ meta: {} }] } };
+        return { contents: JSON.stringify(yahoo) };
       }
     };
   };
 }
 
-test('fetchSpot: returns price when query1 succeeds', async () => {
+test('fetchSpot: returns price on success', async () => {
   const price = await fetchSpot('AAPL', mockFetch([{ ok: true, price: 195.5 }]));
   assert.equal(price, 195.5);
 });
 
-test('fetchSpot: falls back to query2 when query1 returns non-ok', async () => {
-  const price = await fetchSpot('TSLA', mockFetch([{ ok: false }, { ok: true, price: 250 }]));
-  assert.equal(price, 250);
-});
-
-test('fetchSpot: falls back to query2 when query1 throws (network error)', async () => {
-  const price = await fetchSpot('MSFT', mockFetch([new Error('network'), { ok: true, price: 420 }]));
-  assert.equal(price, 420);
-});
-
-test('fetchSpot: falls back to query2 when query1 returns null price', async () => {
-  const price = await fetchSpot('SPY', mockFetch([{ ok: true, price: null }, { ok: true, price: 500 }]));
-  assert.equal(price, 500);
-});
-
-test('fetchSpot: throws when both hosts fail with non-ok', async () => {
+test('fetchSpot: throws when proxy returns non-ok', async () => {
   await assert.rejects(
-    () => fetchSpot('BAD', mockFetch([{ ok: false }, { ok: false }])),
-    { message: 'No price for BAD' }
+    () => fetchSpot('BAD', mockFetch([{ ok: false }])),
+    /Proxy error/
   );
 });
 
-test('fetchSpot: throws when both hosts return null price', async () => {
+test('fetchSpot: throws when proxy throws (network error)', async () => {
   await assert.rejects(
-    () => fetchSpot('NONE', mockFetch([{ ok: true, price: null }, { ok: true, price: null }])),
+    () => fetchSpot('ERR', mockFetch([new Error('network')])),
+    /network/
+  );
+});
+
+test('fetchSpot: throws when price is null in response', async () => {
+  await assert.rejects(
+    () => fetchSpot('NONE', mockFetch([{ ok: true, price: null }])),
     { message: 'No price for NONE' }
   );
 });
 
-test('fetchSpot: throws when both hosts throw', async () => {
+test('fetchSpot: throws when contents JSON is malformed', async () => {
+  const badFetch = async () => ({ ok: true, json: async () => ({ contents: 'not-json' }) });
   await assert.rejects(
-    () => fetchSpot('ERR', mockFetch([new Error('e1'), new Error('e2')])),
-    { message: 'No price for ERR' }
+    () => fetchSpot('X', badFetch),
+    { message: 'No price for X' }
   );
 });
 
-test('fetchSpot: encodes ticker in URL (special chars)', async () => {
+test('fetchSpot: URL routes through allorigins proxy with encoded ticker', async () => {
   const urls = [];
-  const fakeFetch = async (url) => { urls.push(url); return { ok: false, json: async () => ({}) }; };
-  await fetchSpot('BRK.B', fakeFetch).catch(() => {});
-  assert.ok(urls[0].includes('BRK.B'), 'URL should contain encoded ticker');
-  assert.ok(urls[0].includes('query1.finance.yahoo.com'), 'First attempt uses query1');
-  assert.ok(urls[1].includes('query2.finance.yahoo.com'), 'Second attempt uses query2');
+  const spy = async (url) => { urls.push(url); return { ok: true, json: async () => ({ contents: JSON.stringify({ chart: { result: [{ meta: { regularMarketPrice: 1 } }] } }) }) }; };
+  await fetchSpot('BRK.B', spy);
+  assert.ok(urls[0].includes('allorigins.win'), 'routes through allorigins proxy');
+  assert.ok(urls[0].includes('BRK.B'), 'ticker present in proxy URL');
+  assert.ok(urls[0].includes('query1.finance.yahoo.com'), 'Yahoo URL embedded in proxy URL');
 });
