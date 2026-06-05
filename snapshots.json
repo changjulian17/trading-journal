@@ -2,15 +2,27 @@
   "2026-06-04": {
     "simple": [
       {
-        "asset": "qqq",
+        "asset": "XLE",
         "side": "Long",
-        "entry": "100",
-        "totalQty": "100",
-        "stop1": "50",
-        "qty1": "50",
-        "stop2": "50",
-        "qty2": "50",
-        "takeProfit": "300",
+        "entry": "58.73",
+        "totalQty": "150",
+        "stop1": "57.91",
+        "qty1": "150",
+        "stop2": "0",
+        "qty2": "0",
+        "takeProfit": "62.67",
+        "notes": ""
+      },
+      {
+        "asset": "VT",
+        "side": "Long",
+        "entry": "158.49",
+        "totalQty": "300",
+        "stop1": "157.46",
+        "qty1": "150",
+        "stop2": "156.87",
+        "qty2": "150",
+        "takeProfit": "170",
         "notes": ""
       }
     ],
@@ -20,16 +32,17 @@
         "side": "Long",
         "qty": "10",
         "multiplier": 100,
-        "delta": ".53",
-        "premAdj": "1",
-        "spot": "100",
-        "stop1": "50",
-        "qty1": "50",
-        "stop2": "50",
-        "qty2": "50",
-        "takeProfit": "300"
+        "delta": ".474",
+        "premAdj": "0",
+        "spot": "193.17",
+        "stop1": "181.55",
+        "qty1": "28",
+        "stop2": "188.94",
+        "qty2": "28",
+        "takeProfit": "220",
+        "hedgeQty": "419"
       }
     ],
-    "savedAt": "2026-06-04T08:26:04.821Z"
+    "savedAt": "2026-06-05T03:47:12.306Z"
   }
 }
