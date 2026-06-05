@@ -176,13 +176,13 @@ test('cH: cash delta subtracts hedgeQty', () => {
 });
 
 test('cH: risk with stop1 and hedgeQty', () => {
-  // cd = 2*100*0.5 - 80 = 20, spot=50, hedgeQty=80
-  // sz=80 (hedgeQty overrides |cd|), l1=45*80=3600, risk=|3600|-50*80=-400
+  // cd = 2*100*0.5 - 80 = 20, sz=|cd|=20, spot=50
+  // l1=45*80=3600, risk=|3600| - 50*20 = 3600 - 1000 = 2600
   const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5, spot: 50, stop1: 45, qty1: 80, hedgeQty: 80 });
-  assert.equal(r.risk, -400);
+  assert.equal(r.risk, 2600);
 });
 
-test('cH: risk uses |cd| as sz when hedgeQty is null', () => {
+test('cH: risk uses |cd| as sz', () => {
   // cd = 1*100*0.5 = 50, spot=10, stop1=9, qty1=50, sz=|50|=50
   // risk = |9*50| - 10*50 = 450 - 500 = -50
   const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 0.5, spot: 10, stop1: 9, qty1: 50 });

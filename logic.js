@@ -57,7 +57,7 @@ function cH(p) {
   if (cd != null && sp != null && (s1 != null || s2 != null)) {
     var l1 = (s1 != null && q1 != null) ? s1 * q1 : 0;
     var l2 = (s2 != null && q2 != null) ? s2 * q2 : 0;
-    var sz = hq || Math.abs(cd);
+    var sz = Math.abs(cd);
     risk = Math.abs(l1 + l2) - sp * sz;
   }
   if (risk != null && risk !== 0 && tp != null && cd != null)
