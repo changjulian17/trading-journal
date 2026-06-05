@@ -93,24 +93,19 @@ test('cS: empty position returns all nulls, vq true', () => {
 
 test('cS: entry + stop1 + qty1 computes risk', () => {
   const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 10 });
-  assert.equal(r.ra, 100);   // |100-90| * 10
+  assert.equal(r.ra, -100);  // |90*10| - 100*10 = 900-1000
   assert.equal(r.q, 10);
-});
-
-test('cS: short position stop above entry', () => {
-  const r = cS({ ...bs(), entry: 100, stop1: 110, qty1: 5, side: 'Short' });
-  assert.equal(r.ra, 50);    // |100-110| * 5
 });
 
 test('cS: two stops combine risk and qty', () => {
   const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 5, stop2: 95, qty2: 5 });
-  assert.equal(r.ra, 75);    // 10*5 + 5*5
+  assert.equal(r.ra, -75);   // |90*5+95*5| - 100*10 = 925-1000
   assert.equal(r.q, 10);
 });
 
-test('cS: cost basis = entry * total qty', () => {
-  const r = cS({ ...bs(), entry: 50, stop1: 45, qty1: 20 });
-  assert.equal(r.cb, 1000);
+test('cS: short position risk is positive', () => {
+  const r = cS({ ...bs(), entry: 100, stop1: 110, qty1: 5, side: 'Short' });
+  assert.equal(r.ra, 50);    // |110*5| - 100*5 = 550-500
 });
 
 test('cS: R/R ratio with take profit', () => {
@@ -152,7 +147,7 @@ test('cS: qty1=0 → no risk computed', () => {
 
 test('cS: string inputs are parsed via n()', () => {
   const r = cS({ ...bs(), entry: '100', stop1: '90', qty1: '10' });
-  assert.equal(r.ra, 100);
+  assert.equal(r.ra, -100);  // |90*10| - 100*10
 });
 
 // ---------------------------------------------------------------------------

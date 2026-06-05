@@ -38,15 +38,16 @@ function esc(s) {
 
 function cS(p) {
   var e = n(p.entry), sp1 = n(p.stop1), q1 = n(p.qty1) || 0, sp2 = n(p.stop2), q2 = n(p.qty2) || 0, tq = n(p.totalQty), tp = n(p.takeProfit);
-  var rd = null, wt = null, cb = null, rr = null;
+  var rd = null, wt = null, rr = null;
   if (e != null && sp1 != null && q1 > 0) {
-    rd = Math.abs(e - sp1) * q1;
+    var l1 = sp1 * q1, l2 = 0;
     wt = q1;
-    if (sp2 != null && q2 > 0) { rd += Math.abs(e - sp2) * q2; wt += q2; }
+    if (sp2 != null && q2 > 0) { l2 = sp2 * q2; wt += q2; }
+    rd = Math.abs(l1 + l2) - e * wt;
   }
-  if (e != null && sp1 != null && tp != null && sp1 !== e)
-    rr = -(tp - e) / (sp1 - e);
-  return { ra: rd, q: wt, cb: e != null ? e * (wt || 0) : null, rr: rr, vq: tq != null && wt != null ? Math.abs(wt - tq) < 0.001 : true };
+  if (rd != null && rd !== 0 && tp != null)
+    rr = Math.abs((tp - e) * wt / rd);
+  return { ra: rd, q: wt, rr: rr, vq: tq != null && wt != null ? Math.abs(wt - tq) < 0.001 : true };
 }
 
 function cH(p) {
