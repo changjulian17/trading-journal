@@ -18,13 +18,13 @@ header h1{font-size:16px;font-weight:600}
 .bd{background:transparent;border-color:var(--red);color:var(--red)}
 main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb .btn{flex:1 0 100%;font-size:14px;padding:10px 0}.bs{display:flex;gap:8px}.bs .btn{flex:1}.sec{background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
 .sh{padding:12px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center}
-.sb{padding:12px}
-.pc{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px}
+.sb{padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;align-items:start}
+.pc{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:0}
 .pc .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .pc .ch .ar{display:flex;align-items:center;gap:8px;flex:1}.pc .ch .ar input[type="text"]{width:auto;flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:10px 8px;border-radius:6px;font-size:15px;font-family:Menlo,monospace;min-height:var(--touch)}
 .pc .ch .ar select{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:10px 6px;border-radius:6px;font-size:14px;min-height:var(--touch)}
 .pc .db{background:transparent;border:1px solid var(--red);color:var(--red);width:40px;height:40px;border-radius:6px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;flex-shrink:0}
-.ff{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.ff{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}.frow{display:flex;gap:6px}.frow .ff{flex:1;margin-bottom:6px}
 .ff label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block}
 .ff input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:12px 10px;border-radius:6px;font-size:16px;width:100%;font-family:Menlo,monospace;min-height:var(--touch)}
 .cr{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
@@ -50,6 +50,15 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 .mn{font-size:12px;color:var(--muted);margin-top:12px}.mn a{color:var(--accent)}
 @media(min-width:768px){body{font-size:13px}header{padding:12px 20px}main{padding:16px 20px}.tb .btn{flex:0 1 auto}.bs{flex-wrap:nowrap}}
 .ghH{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:300;align-items:center;justify-content:center}.ghH.open{display:flex}.ghH .gc{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;width:92%;max-width:360px;max-height:80vh}.ghH .gc h3{margin:0 0 8px;font-size:15px}.ghH .gc .gx{float:right;cursor:pointer;font-size:18px;color:var(--muted)}.ghH .gc dl{margin:0;font:13px/1.5 sans-serif}.ghH .gc dt{color:var(--accent);font-weight:700;margin-top:8px}.ghH .gc dd{color:var(--muted);margin:0 0 0 8px}
+.tip-ico{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;border:1px solid var(--muted);color:var(--muted);font-size:9px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none;padding:0;line-height:1;background:transparent}
+.tip-ico:hover,.tip-ico:focus{border-color:var(--accent);color:var(--accent);outline:none}
+.tip-pop{position:fixed;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;width:260px;z-index:500;box-shadow:0 4px 20px rgba(0,0,0,.7);font-size:12px;line-height:1.5;display:none}
+.tip-pop.show{display:block}
+.tip-pop strong{display:block;color:var(--text);font-size:13px;font-weight:600;margin-bottom:4px}
+.tip-pop .tp-d{color:var(--muted)}
+.tip-pop .tp-f{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.tip-pop .tp-fl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+.tip-pop .tp-fv{color:var(--accent);font-family:Menlo,monospace;font-size:11px;word-break:break-word}
 </style>
 </head>
 <body>
@@ -72,6 +81,7 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 <div style="display:flex;gap:8px;margin:8px 0"><button class="btn" id="bC">Clear</button><button class="btn" id="bE">Export</button><input type="file" id="fI" accept=".json" style="display:none" /></div>
 </main>
 <div class="tt" id="toast"></div>
+<div id="tipPop" class="tip-pop"><strong id="tipT"></strong><div class="tp-d" id="tipD"></div><div class="tp-f" id="tipF"><span class="tp-fl">Formula</span><span class="tp-fv" id="tipFL"></span></div></div>
 
 <script>
 /* config */
@@ -106,36 +116,93 @@ function cS(p){var e=n(p.entry),sp1=n(p.stop1),q1=n(p.qty1)||0,sp2=n(p.stop2),q2
 function cH(p){var q=n(p.qty),hq=n(p.hedgeQty),m=n(p.multiplier),d=n(p.delta),sp=n(p.spot),s1=n(p.stop1),q1=n(p.qty1)||0,s2=n(p.stop2),q2=n(p.qty2)||0,tp=n(p.takeProfit);var cd=null,risk=null,rr=null;if(q!=null&&m!=null&&d!=null)cd=q*m*d;if(cd!=null&&sp!=null&&(s1!=null||s2!=null)){var l1=(s1!=null&&q1!=null)?s1*q1:0,l2=(s2!=null&&q2!=null)?s2*q2:0;var sz=hq||Math.abs(cd);risk=Math.abs(l1+l2)-sp*sz}if(risk!=null&&risk!==0&&tp!=null&&cd!=null)rr=Math.abs((tp-sp)*Math.abs(cd)/risk);return{cd:cd,risk:risk,rr:rr}}
 /* render */
 function render(){document.getElementById('eD').value=s.date;rS();rH();rh()}
-function rS(){_r=true;var c=document.getElementById('sB');c.innerHTML='';var t=0;if(!s.simple.length){c.innerHTML='<div class="em">Tap +Simple</div>';_r=false;return}s.simple.forEach(function(p,i){var r=cS(p);if(r.ra)t+=Math.abs(r.ra);var ve=r.vq;c.innerHTML+='<div class="pc" data-si="'+i+'"><div class="ch"><div class="ar"><input type="text" data-si="'+i+'"  title="Ticker symbol (e.g. AAPL, SPY)" data-sk="asset" value="'+esc(p.asset)+'" placeholder="QQQ" autocomplete="off"/><select data-si="'+i+'"  title="Long = buy, Short = sell" data-sk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select></div><button class="db" data-ds="'+i+'">X</button></div>'
-+'<div class="ff"><label>Entry</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'"  title="Fill price for the position" data-sk="entry" value="'+(p.entry||'')+'" /></div>'
-+'<div class="ff"><label>Ttl Qty</label><input type="number" step="1" inputmode="numeric" data-si="'+i+'"  title="Total shares/contracts (must = Stop 1 Qty + Stop 2 Qty)" data-sk="totalQty" value="'+(p.totalQty||'')+'"/></div>'
-+'<div class="ff"><label>Stop 1</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'"  title="First stop loss price level" data-sk="stop1" value="'+(p.stop1||'')+'"/></div>'
-+'<div class="ff"><label>Qty 1</label><input type="number" step="1" inputmode="numeric" data-si="'+i+'"  title="Size for first stop (shares/contracts)" data-sk="qty1" value="'+(p.qty1||'')+'"/></div>'
-+'<div class="ff"><label>Stop 2</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'"  title="Second stop loss price level (optional)" data-sk="stop2" value="'+(p.stop2||'')+'"/></div>'
-+'<div class="ff"><label>Qty 2</label><input type="number" step="1" inputmode="numeric" data-si="'+i+'"  title="Size for second stop (optional)" data-sk="qty2" value="'+(p.qty2||'')+'"/></div>'
-+'<div class="ff"><label>TP</label><input type="number" step="any" inputmode="decimal" data-si="'+i+'"  title="Target price for take profit" data-sk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
-+'<div class="ff"><label>Notes</label><input type="text" data-si="'+i+'"  title="Thesis, catalysts, or trade notes" data-sk="notes" value="'+esc(p.notes)+'" autocomplete="off"/></div>'
-+'<div class="cr"><div class="cv"><span class="cl">Risk $</span><div class="cnv md" id="rR_'+i+'">'+(r.ra!=null?$m(r.ra):_D)+'</div></div>'
-+'<div class="cv"><span class="cl">Cost</span><div class="cnv md" id="rC_'+i+'">'+(r.cb!=null?$m(r.cb):_D)+'</div></div>'
-+'<div class="cv"><span class="cl">R/R</span><div class="cnv md" id="rRR_'+i+'">'+(r.rr!=null?fm(r.rr,2)+'x':_D)+'</div></div>'
-+'<div class="cv"><span class="cl">Qty</span><div class="cnv md" id="rQ_'+i+'">'+(r.q!=null?fm(r.q,2):_D)+'</div></div></div>'
+function rS(){_r=true;var c=document.getElementById('sB');c.innerHTML='';var t=0;if(!s.simple.length){c.innerHTML='<div class="em">Tap +Simple</div>';_r=false;return}s.simple.forEach(function(p,i){var r=cS(p);if(r.ra)t+=Math.abs(r.ra);var ve=r.vq;c.innerHTML+='<div class="pc" data-si="'+i+'"><div class="ch"><div class="ar"><input type="text" data-si="'+i+'" data-sk="asset" value="'+esc(p.asset)+'" placeholder="QQQ" autocomplete="off"/><button type="button" class="tip-ico" data-tip="asset">?</button><select data-si="'+i+'" data-sk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select><button type="button" class="tip-ico" data-tip="side">?</button></div><button class="db" data-ds="'+i+'">X</button></div>'
++'<div class="ff"><label>Entry<button type="button" class="tip-ico" data-tip="entry">?</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="entry" value="'+(p.entry||'')+'" /></div>'
++'<div class="ff"><label>Ttl Qty<button type="button" class="tip-ico" data-tip="totalQty">?</button></label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="totalQty" value="'+(p.totalQty||'')+'"/></div>'
++'<div class="frow"><div class="ff"><label>Stop 1<button type="button" class="tip-ico" data-tip="stop1">?</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="stop1" value="'+(p.stop1||'')+'"/></div>'
++'<div class="ff"><label>Qty 1<button type="button" class="tip-ico" data-tip="qty1">?</button></label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="qty1" value="'+(p.qty1||'')+'"/></div></div>'
++'<div class="frow"><div class="ff"><label>Stop 2<button type="button" class="tip-ico" data-tip="stop2">?</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="stop2" value="'+(p.stop2||'')+'"/></div>'
++'<div class="ff"><label>Qty 2<button type="button" class="tip-ico" data-tip="qty2">?</button></label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="qty2" value="'+(p.qty2||'')+'"/></div></div>'
++'<div class="ff"><label>TP<button type="button" class="tip-ico" data-tip="takeProfit">?</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
++'<div class="ff"><label>Notes<button type="button" class="tip-ico" data-tip="notes">?</button></label><input type="text" data-si="'+i+'" data-sk="notes" value="'+esc(p.notes)+'" autocomplete="off"/></div>'
++'<div class="cr"><div class="cv"><span class="cl">Risk $<button type="button" class="tip-ico" data-tip="ra">?</button></span><div class="cnv md" id="rR_'+i+'">'+(r.ra!=null?$m(r.ra):_D)+'</div></div>'
++'<div class="cv"><span class="cl">Cost<button type="button" class="tip-ico" data-tip="cb">?</button></span><div class="cnv md" id="rC_'+i+'">'+(r.cb!=null?$m(r.cb):_D)+'</div></div>'
++'<div class="cv"><span class="cl">R/R<button type="button" class="tip-ico" data-tip="rr">?</button></span><div class="cnv md" id="rRR_'+i+'">'+(r.rr!=null?fm(r.rr,2)+'x':_D)+'</div></div>'
++'<div class="cv"><span class="cl">Qty<button type="button" class="tip-ico" data-tip="q">?</button></span><div class="cnv md" id="rQ_'+i+'">'+(r.q!=null?fm(r.q,2):_D)+'</div></div></div>'
 +(ve?'':'<div class="err" id="rE_'+i+'">Qty sum '+(r.q!=null?fm(r.q,2):'?')+' < > total '+(p.totalQty||'?')+'</div>')
 +'</div>'});document.getElementById('sRS').textContent=s.simple.length?s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):''):'';_r=false}function uS(i){if(i>=s.simple.length)return;var p=s.simple[i],r=cS(p),rv,el;el=document.getElementById('rR_'+i);if(el){rv=r.ra!=null?$m(r.ra):_D;el.textContent=rv;el.className='cnv '+(r.ra!=null?'p':'md')}el=document.getElementById('rC_'+i);if(el){rv=r.cb!=null?$m(r.cb):_D;el.textContent=rv;el.className='cnv '+(r.cb!=null?'p':'md')}el=document.getElementById('rRR_'+i);if(el){rv=r.rr!=null?fm(r.rr,2)+'x':_D;el.textContent=rv;el.className='cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')}el=document.getElementById('rQ_'+i);if(el){rv=r.q!=null?fm(r.q,2):_D;el.textContent=rv;el.className='cnv '+(r.q!=null?'p':'md')}el=document.getElementById('rE_'+i);var ve=r.vq;if(ve&&el){el.remove()}else if(!ve&&!el){var nd=document.createElement('div');nd.className='err';nd.id='rE_'+i;var _card=document.querySelector('.pc[data-si="'+i+'"]');_card.insertBefore(nd,_card.querySelector('.cr').nextSibling||null)}el=document.getElementById('rE_'+i);if(el&&!ve)el.textContent='Qty sum '+(r.q!=null?fm(r.q,2):'?')+' < > total '+(p.totalQty||'?');var t=0;for(var j=0;j<s.simple.length;j++){var rj=cS(s.simple[j]);if(rj.ra)t+=Math.abs(rj.ra)}var rs=document.getElementById('sRS');if(rs)rs.textContent=s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):'')}
-function rH(){_r=true;var c=document.getElementById('hB');c.innerHTML='';var t=0;if(!s.hedged.length){c.innerHTML='<div class="em">Tap +Options</div>';_r=false;return}s.hedged.forEach(function(p,i){var r=cH(p);if(r.risk)t+=Math.abs(r.risk);c.innerHTML+='<div class="pc" data-hi="'+i+'"><div class="ch"><div class="ar"><input type="text" data-hi="'+i+'"  title="Underlying ticker (e.g. TLT, SPY)" data-hk="ticker" value="'+esc(p.ticker)+'" placeholder="TLT" autocomplete="off"/><select data-hi="'+i+'"  title="Long = bullish, Short = bearish" data-hk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select></div><button class="db" data-dh="'+i+'">X</button></div>'
-+'<div class="ff"><label>Spot</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'"  title="Current price of the underlying" data-hk="spot" value="'+(p.spot||'')+'"/></div>'
-+'<div class="ff"><label>Qty</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'"  title="Number of option contracts (100 shares each)" data-hk="qty" value="'+(p.qty||'')+'"/></div>'+'<div class="ff"><label>Hedge Qty</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'"  title="Shares of spot being hedged" data-hk="hedgeQty" value="'+(p.hedgeQty||'')+'"/></div>'
-+'<div class="ff"><label>M</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'"  title="Option multiplier (default 100 for standard equity options)" data-hk="multiplier" value="'+(p.multiplier||100)+'"/></div>'
-+'<div class="ff"><label>Delta</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'"  title="Option delta (0.0 to 1.0)" data-hk="delta" value="'+(p.delta||'')+'"/></div>'
-+'<div class="ff"><label>Prem</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'"  title="Premium adjustment (debit/credit from entry)" data-hk="premAdj" value="'+(p.premAdj||'')+'"/></div>'
-+'<div class="ff"><label>Stop 1</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'"  title="First stop loss price level" data-hk="stop1" value="'+(p.stop1||'')+'"/></div>'
-+'<div class="ff"><label>Qty 1</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'"  title="Size for first stop (shares/contracts)" data-hk="qty1" value="'+(p.qty1||'')+'"/></div>'
-+'<div class="ff"><label>Stop 2</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'"  title="Second stop loss price level (optional)" data-hk="stop2" value="'+(p.stop2||'')+'"/></div>'
-+'<div class="ff"><label>Qty 2</label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'"  title="Size for second stop (optional)" data-hk="qty2" value="'+(p.qty2||'')+'"/></div>'
-+'<div class="ff"><label>TP</label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'"  title="Target price for take profit" data-hk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
-+'<div class="cr"><div class="cv"><span class="cl">Cash D</span><div class="cnv md" id="hCD_'+i+'">'+(r.cd!=null?fm(r.cd,2):_D)+'</div></div>'
-+'<div class="cv"><span class="cl">Risk</span><div class="cnv md" id="hR_'+i+'">'+(r.risk!=null?$m(r.risk):_D)+'</div></div>'
-+'<div class="cv"><span class="cl">R/R</span><div class="cnv md" id="hRR_'+i+'">'+(r.rr!=null?fm(r.rr,2)+'x':_D)+'</div></div></div></div>'});document.getElementById('hRS').textContent=s.hedged.length?s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):''):'';_r=false}function uH(i){if(i>=s.hedged.length)return;var p=s.hedged[i],r=cH(p),rv,el;el=document.getElementById('hCD_'+i);if(el){rv=r.cd!=null?fm(r.cd,2):_D;el.textContent=rv;el.className='cnv '+(r.cd!=null?'p':'md')}el=document.getElementById('hR_'+i);if(el){rv=r.risk!=null?$m(r.risk):_D;el.textContent=rv;el.className='cnv '+(r.risk!=null?'p':'md')}el=document.getElementById('hRR_'+i);if(el){rv=r.rr!=null?fm(r.rr,2)+'x':_D;el.textContent=rv;el.className='cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')}var t=0;for(var j=0;j<s.hedged.length;j++){var rj=cH(s.hedged[j]);if(rj.risk)t+=Math.abs(rj.risk)}var rs=document.getElementById('hRS');if(rs)rs.textContent=s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):'')}
+function rH(){_r=true;var c=document.getElementById('hB');c.innerHTML='';var t=0;if(!s.hedged.length){c.innerHTML='<div class="em">Tap +Options</div>';_r=false;return}s.hedged.forEach(function(p,i){var r=cH(p);if(r.risk)t+=Math.abs(r.risk);c.innerHTML+='<div class="pc" data-hi="'+i+'"><div class="ch"><div class="ar"><input type="text" data-hi="'+i+'" data-hk="ticker" value="'+esc(p.ticker)+'" placeholder="TLT" autocomplete="off"/><button type="button" class="tip-ico" data-tip="ticker">?</button><select data-hi="'+i+'" data-hk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select><button type="button" class="tip-ico" data-tip="hside">?</button></div><button class="db" data-dh="'+i+'">X</button></div>'
++'<div class="frow"><div class="ff"><label>Spot<button type="button" class="tip-ico" data-tip="spot">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="spot" value="'+(p.spot||'')+'"/></div>'
++'<div class="ff"><label>Qty<button type="button" class="tip-ico" data-tip="hqty">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty" value="'+(p.qty||'')+'"/></div></div>'
++'<div class="frow"><div class="ff"><label>Hedge Qty<button type="button" class="tip-ico" data-tip="hedgeQty">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="hedgeQty" value="'+(p.hedgeQty||'')+'"/></div>'
++'<div class="ff"><label>Multiplier<button type="button" class="tip-ico" data-tip="multiplier">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="multiplier" value="'+(p.multiplier||100)+'"/></div></div>'
++'<div class="frow"><div class="ff"><label>Delta<button type="button" class="tip-ico" data-tip="delta">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="delta" value="'+(p.delta||'')+'"/></div>'
++'<div class="ff"><label>Premium<button type="button" class="tip-ico" data-tip="premAdj">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="premAdj" value="'+(p.premAdj||'')+'"/></div></div>'
++'<div class="frow"><div class="ff"><label>Stop 1<button type="button" class="tip-ico" data-tip="hstop1">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="stop1" value="'+(p.stop1||'')+'"/></div>'
++'<div class="ff"><label>Qty 1<button type="button" class="tip-ico" data-tip="hqty1">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty1" value="'+(p.qty1||'')+'"/></div></div>'
++'<div class="frow"><div class="ff"><label>Stop 2<button type="button" class="tip-ico" data-tip="hstop2">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="stop2" value="'+(p.stop2||'')+'"/></div>'
++'<div class="ff"><label>Qty 2<button type="button" class="tip-ico" data-tip="hqty2">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty2" value="'+(p.qty2||'')+'"/></div></div>'
++'<div class="ff"><label>TP<button type="button" class="tip-ico" data-tip="htp">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="takeProfit" value="'+(p.takeProfit||'')+'"/></div>'
++'<div class="cr"><div class="cv"><span class="cl">Cash D<button type="button" class="tip-ico" data-tip="cd">?</button></span><div class="cnv md" id="hCD_'+i+'">'+(r.cd!=null?fm(r.cd,2):_D)+'</div></div>'
++'<div class="cv"><span class="cl">Risk<button type="button" class="tip-ico" data-tip="hrisk">?</button></span><div class="cnv md" id="hR_'+i+'">'+(r.risk!=null?$m(r.risk):_D)+'</div></div>'
++'<div class="cv"><span class="cl">R/R<button type="button" class="tip-ico" data-tip="hrr">?</button></span><div class="cnv md" id="hRR_'+i+'">'+(r.rr!=null?fm(r.rr,2)+'x':_D)+'</div></div></div></div>'});document.getElementById('hRS').textContent=s.hedged.length?s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):''):'';_r=false}function uH(i){if(i>=s.hedged.length)return;var p=s.hedged[i],r=cH(p),rv,el;el=document.getElementById('hCD_'+i);if(el){rv=r.cd!=null?fm(r.cd,2):_D;el.textContent=rv;el.className='cnv '+(r.cd!=null?'p':'md')}el=document.getElementById('hR_'+i);if(el){rv=r.risk!=null?$m(r.risk):_D;el.textContent=rv;el.className='cnv '+(r.risk!=null?'p':'md')}el=document.getElementById('hRR_'+i);if(el){rv=r.rr!=null?fm(r.rr,2)+'x':_D;el.textContent=rv;el.className='cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')}var t=0;for(var j=0;j<s.hedged.length;j++){var rj=cH(s.hedged[j]);if(rj.risk)t+=Math.abs(rj.risk)}var rs=document.getElementById('hRS');if(rs)rs.textContent=s.hedged.length+' trade'+(s.hedged.length>1?'s':'')+(t?', risk '+$m(t):'')}
 function rh(){var all=_c||{},dates=Object.keys(all).sort().reverse(),list=document.getElementById('hL');list.innerHTML='';document.getElementById('hC').textContent=dates.length?dates.length+' snap'+(dates.length>1?'s':''):'';if(!dates.length){list.innerHTML='<div class="em">Empty</div>';return}dates.forEach(function(d){var snap=all[d],nS=(snap.simple||[]).length,nH=(snap.hedged||[]).length;list.innerHTML+='<div class="hi"><div class="h2"><div class="da">'+d+'</div><div class="ac"><button class="btn" data-ld="'+d+'">Load</button><button class="btn bd" data-dl="'+d+'">Del</button></div></div><div class="su">'+nS+' s, '+nH+' h'+(snap.savedAt?' @ '+snap.savedAt.slice(11,16):'')+'</div></div>'})}
+/* tooltips */
+var TIP={
+  asset:{t:'Ticker Symbol',d:'Exchange symbol for the instrument being traded (e.g. AAPL, SPY, QQQ, BTC).'},
+  side:{t:'Direction',d:'Long — buy first, profit if price rises.\nShort — sell first, profit if price falls.'},
+  entry:{t:'Entry Price',d:'Average fill price for this position.'},
+  totalQty:{t:'Total Quantity',d:'Total shares or contracts held. Must equal Qty 1 + Qty 2 when both stops are set — a mismatch shows a warning.'},
+  stop1:{t:'Stop 1 Price',d:'Price level at which you exit the first tranche to cap losses.'},
+  qty1:{t:'Qty at Stop 1',d:'Shares or contracts to exit at Stop 1.'},
+  stop2:{t:'Stop 2 Price',d:'Price level for a secondary partial exit. Leave blank for a single-stop trade.'},
+  qty2:{t:'Qty at Stop 2',d:'Shares or contracts to exit at Stop 2. Required when Stop 2 is set.'},
+  takeProfit:{t:'Take Profit',d:'Target price at which you plan to close for a profit. Used to compute the R/R ratio.'},
+  notes:{t:'Notes',d:'Trade thesis, catalyst, or reminders about this position.'},
+  ra:{t:'Risk $',d:'Total capital at risk if all stops are hit.',f:'|Entry − Stop1| × Qty1 + |Entry − Stop2| × Qty2'},
+  cb:{t:'Cost Basis',d:'Total capital deployed to open this position.',f:'Entry × (Qty1 + Qty2)'},
+  rr:{t:'Reward / Risk',d:'Ratio of potential profit to potential loss. A value ≥ 2.0x is generally considered acceptable.',f:'(TP − Entry) ÷ (Entry − Stop1)'},
+  q:{t:'Qty (weighted)',d:'Combined quantity across all stop levels. Should match Total Qty — a mismatch triggers the warning.',f:'Qty1 + Qty2'},
+  ticker:{t:'Underlying Ticker',d:'Exchange symbol for the underlying asset being hedged (e.g. TLT, SPY, GLD, /ES).'},
+  hside:{t:'Direction',d:'Long — bullish; profits if underlying rises.\nShort — bearish; profits if underlying falls.'},
+  spot:{t:'Spot Price',d:'Current market price of the underlying asset.'},
+  hqty:{t:'Option Contracts',d:'Number of option contracts held. Each standard US equity contract controls 100 shares.'},
+  hedgeQty:{t:'Hedge Quantity',d:'Shares of the underlying this options position is hedging. When set, overrides |Cash Delta| as the notional size in the risk calculation.'},
+  multiplier:{t:'Contract Multiplier',d:'Shares controlled per contract. Default 100 for standard US equity options. Adjust for index options, futures, or non-standard contracts.'},
+  delta:{t:'Option Delta',d:'Change in option price per $1 move in the underlying. Ranges 0.0–1.0 for calls (negative for puts). ATM ≈ 0.50, deep ITM ≈ 1.0.'},
+  premAdj:{t:'Premium Adjustment',d:'Net premium paid (debit, enter positive) or received (credit, enter negative). Used for P&L reference.'},
+  hstop1:{t:'Stop 1 Price',d:'Underlying price level at which you exit the first tranche of the hedged position.'},
+  hqty1:{t:'Qty at Stop 1',d:'Shares or contracts to exit at Stop 1.'},
+  hstop2:{t:'Stop 2 Price',d:'Underlying price for a secondary partial exit. Optional.'},
+  hqty2:{t:'Qty at Stop 2',d:'Shares or contracts to exit at Stop 2.'},
+  htp:{t:'Take Profit',d:'Underlying price target at which you plan to close for a profit.'},
+  cd:{t:'Cash Delta',d:'Dollar-equivalent share exposure of the options position. Positive = long exposure, negative = short.',f:'Qty × Multiplier × Delta'},
+  hrisk:{t:'Net Risk $',d:'Net dollar risk after offsetting stop-loss proceeds against spot cost. Negative = position is net hedged at the stop levels.',f:'|Stop1×Qty1 + Stop2×Qty2| − Spot × (HedgeQty or |CashDelta|)'},
+  hrr:{t:'Reward / Risk',d:'Absolute ratio of potential profit to potential loss, regardless of trade direction.',f:'|(TP − Spot) × |CashDelta|| ÷ |Risk|'}
+};
+var _tipEl=null;
+function showTip(btn,key){
+  var pop=document.getElementById('tipPop'),t=TIP[key];
+  if(!t)return;
+  if(_tipEl===btn&&pop.classList.contains('show')){pop.classList.remove('show');_tipEl=null;return}
+  _tipEl=btn;
+  document.getElementById('tipT').textContent=t.t;
+  document.getElementById('tipD').textContent=t.d;
+  var fEl=document.getElementById('tipF');
+  if(t.f){document.getElementById('tipFL').textContent=t.f;fEl.style.display=''}
+  else fEl.style.display='none';
+  pop.classList.add('show');
+  var r=btn.getBoundingClientRect(),pw=260,left=r.left,top=r.bottom+8;
+  if(left+pw>window.innerWidth-8)left=window.innerWidth-pw-8;
+  if(left<8)left=8;
+  if(top+200>window.innerHeight)top=Math.max(8,r.top-200);
+  pop.style.left=left+'px';pop.style.top=top+'px';
+}
+document.addEventListener('click',function(e){
+  var pop=document.getElementById('tipPop');
+  if(e.target.classList.contains('tip-ico')){showTip(e.target,e.target.dataset.tip);}
+  else if(pop&&!pop.contains(e.target)){pop.classList.remove('show');_tipEl=null;}
+});
 /* event wiring */
 var _dS=null,_dH=null;
 document.getElementById('eD').addEventListener('change',function(e){s.date=e.target.value});
