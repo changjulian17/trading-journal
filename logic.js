@@ -53,7 +53,7 @@ function cH(p) {
   var q = n(p.qty), hq = n(p.hedgeQty), m = n(p.multiplier), d = n(p.delta), sp = n(p.spot),
       s1 = n(p.stop1), q1 = n(p.qty1) || 0, s2 = n(p.stop2), q2 = n(p.qty2) || 0, tp = n(p.takeProfit);
   var cd = null, risk = null, rr = null;
-  if (q != null && m != null && d != null) cd = q * m * d;
+  if (q != null && m != null && d != null) cd = q * m * d - (hq != null ? hq : 0);
   if (cd != null && sp != null && (s1 != null || s2 != null)) {
     var l1 = (s1 != null && q1 != null) ? s1 * q1 : 0;
     var l2 = (s2 != null && q2 != null) ? s2 * q2 : 0;
