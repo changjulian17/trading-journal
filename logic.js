@@ -68,17 +68,15 @@ function cH(p) {
 
 async function fetchSpot(t, _fetch) {
   var fetcher = _fetch || (typeof fetch !== 'undefined' ? fetch : null);
-  var hosts = ['query1', 'query2'], url, r, j, p;
-  for (var i = 0; i < hosts.length; i++) {
-    try {
-      url = 'https://' + hosts[i] + '.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(t) + '?interval=1d&range=1d';
-      r = await fetcher(url); if (!r.ok) continue;
-      j = await r.json();
-      p = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta && j.chart.result[0].meta.regularMarketPrice;
-      if (p != null) return p;
-    } catch(e) {}
-  }
-  throw new Error('No price for ' + t);
+  var yahooUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(t) + '?interval=1d&range=1d';
+  var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(yahooUrl);
+  var r = await fetcher(proxyUrl);
+  if (!r.ok) throw new Error('Proxy error ' + r.status);
+  var j = await r.json();
+  var p = null;
+  try { var inner = JSON.parse(j.contents); p = inner && inner.chart && inner.chart.result && inner.chart.result[0] && inner.chart.result[0].meta && inner.chart.result[0].meta.regularMarketPrice; } catch(e) {}
+  if (p == null) throw new Error('No price for ' + t);
+  return p;
 }
 
 module.exports = { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot };
