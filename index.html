@@ -51,6 +51,7 @@ main{padding:10px}.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb
 @media(min-width:768px){body{font-size:13px}header{padding:12px 20px}main{padding:16px 20px}.tb .btn{flex:0 1 auto}.bs{flex-wrap:nowrap}}
 .ghH{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:300;align-items:center;justify-content:center}.ghH.open{display:flex}.ghH .gc{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;width:92%;max-width:360px;max-height:80vh}.ghH .gc h3{margin:0 0 8px;font-size:15px}.ghH .gc .gx{float:right;cursor:pointer;font-size:18px;color:var(--muted)}.ghH .gc dl{margin:0;font:13px/1.5 sans-serif}.ghH .gc dt{color:var(--accent);font-weight:700;margin-top:8px}.ghH .gc dd{color:var(--muted);margin:0 0 0 8px}
 .ovr{display:flex;gap:16px;padding:12px 14px;flex-wrap:wrap}.ovc{flex:1;min-width:110px}.ocl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}.ocv{font-size:20px;font-family:Menlo,monospace;font-weight:700}
+.sp-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:4px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-left:4px;padding:0 3px;height:15px;flex-shrink:0;-webkit-tap-highlight-color:transparent;line-height:1}.sp-btn:hover{background:var(--accent);color:#fff}.sp-btn:disabled{opacity:.4;cursor:default}
 .tip-ico{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;border:1px solid var(--muted);color:var(--muted);font-size:9px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none;padding:0;line-height:1;background:transparent}
 .tip-ico:hover,.tip-ico:focus{border-color:var(--accent);color:var(--accent);outline:none}
 .tip-pop{position:fixed;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;width:260px;z-index:500;box-shadow:0 4px 20px rgba(0,0,0,.7);font-size:12px;line-height:1.5;display:none}
@@ -120,7 +121,7 @@ function rOV(){var eq=0,rk=0;s.simple.forEach(function(p){var e=n(p.entry),q=(n(
 /* render */
 function render(){document.getElementById('eD').value=s.date;rS();rH();rh();rOV()}
 function rS(){_r=true;var c=document.getElementById('sB');c.innerHTML='';var t=0;if(!s.simple.length){c.innerHTML='<div class="em">Tap +Simple</div>';_r=false;return}s.simple.forEach(function(p,i){var r=cS(p);if(r.ra)t+=Math.abs(r.ra);var ve=r.vq;c.innerHTML+='<div class="pc" data-si="'+i+'"><div class="ch"><div class="ar"><input type="text" data-si="'+i+'" data-sk="asset" value="'+esc(p.asset)+'" placeholder="QQQ" autocomplete="off"/><button type="button" class="tip-ico" data-tip="asset">?</button><select data-si="'+i+'" data-sk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select><button type="button" class="tip-ico" data-tip="side">?</button></div><button class="db" data-ds="'+i+'">X</button></div>'
-+'<div class="ff"><label>Spot<button type="button" class="tip-ico" data-tip="entry">?</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="entry" value="'+(p.entry||'')+'" /></div>'
++'<div class="ff"><label>Spot<button type="button" class="tip-ico" data-tip="entry">?</button><button type="button" class="sp-btn" data-gs="'+i+'">↻</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="entry" value="'+(p.entry||'')+'" /></div>'
 +'<div class="ff"><label>Ttl Qty<button type="button" class="tip-ico" data-tip="totalQty">?</button></label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="totalQty" value="'+(p.totalQty||'')+'"/></div>'
 +'<div class="frow"><div class="ff"><label>Stop 1<button type="button" class="tip-ico" data-tip="stop1">?</button></label><input type="number" step="any" inputmode="decimal" data-si="'+i+'" data-sk="stop1" value="'+(p.stop1||'')+'"/></div>'
 +'<div class="ff"><label>Qty 1<button type="button" class="tip-ico" data-tip="qty1">?</button></label><input type="number" step="1" inputmode="numeric" data-si="'+i+'" data-sk="qty1" value="'+(p.qty1||'')+'"/></div></div>'
@@ -133,7 +134,7 @@ function rS(){_r=true;var c=document.getElementById('sB');c.innerHTML='';var t=0
 +(ve?'':'<div class="err" id="rE_'+i+'">Qty sum '+(r.q!=null?fm(r.q,2):'?')+' < > total '+(p.totalQty||'?')+'</div>')
 +'</div>'});document.getElementById('sRS').textContent=s.simple.length?s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):''):'';_r=false}function uS(i){if(i>=s.simple.length)return;var p=s.simple[i],r=cS(p),rv,el;el=document.getElementById('rR_'+i);if(el){rv=r.ra!=null?$m(r.ra):_D;el.textContent=rv;el.className='cnv '+(r.ra!=null?'p':'md')}el=document.getElementById('rRR_'+i);if(el){rv=r.rr!=null?fm(r.rr,2)+'x':_D;el.textContent=rv;el.className='cnv '+(r.rr!=null?(r.rr>=1?'p':'n'):'md')}el=document.getElementById('rE_'+i);var ve=r.vq;if(ve&&el){el.remove()}else if(!ve&&!el){var nd=document.createElement('div');nd.className='err';nd.id='rE_'+i;var _card=document.querySelector('.pc[data-si="'+i+'"]');_card.insertBefore(nd,_card.querySelector('.cr').nextSibling||null)}el=document.getElementById('rE_'+i);if(el&&!ve)el.textContent='Qty sum '+(r.q!=null?fm(r.q,2):'?')+' < > total '+(p.totalQty||'?');var t=0;for(var j=0;j<s.simple.length;j++){var rj=cS(s.simple[j]);if(rj.ra)t+=Math.abs(rj.ra)}var rs=document.getElementById('sRS');if(rs)rs.textContent=s.simple.length+' trade'+(s.simple.length>1?'s':'')+(t?', risk '+$m(t):'');rOV()}
 function rH(){_r=true;var c=document.getElementById('hB');c.innerHTML='';var t=0;if(!s.hedged.length){c.innerHTML='<div class="em">Tap +Options</div>';_r=false;return}s.hedged.forEach(function(p,i){var r=cH(p);if(r.risk)t+=Math.abs(r.risk);c.innerHTML+='<div class="pc" data-hi="'+i+'"><div class="ch"><div class="ar"><input type="text" data-hi="'+i+'" data-hk="ticker" value="'+esc(p.ticker)+'" placeholder="TLT" autocomplete="off"/><button type="button" class="tip-ico" data-tip="ticker">?</button><select data-hi="'+i+'" data-hk="side"><option value="Long"'+(p.side==='Long'?' selected':'')+'>Long</option><option value="Short"'+(p.side==='Short'?' selected':'')+'>Short</option></select><button type="button" class="tip-ico" data-tip="hside">?</button></div><button class="db" data-dh="'+i+'">X</button></div>'
-+'<div class="frow"><div class="ff"><label>Spot<button type="button" class="tip-ico" data-tip="spot">?</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="spot" value="'+(p.spot||'')+'"/></div>'
++'<div class="frow"><div class="ff"><label>Spot<button type="button" class="tip-ico" data-tip="spot">?</button><button type="button" class="sp-btn" data-gh="'+i+'">↻</button></label><input type="number" step="any" inputmode="decimal" data-hi="'+i+'" data-hk="spot" value="'+(p.spot||'')+'"/></div>'
 +'<div class="ff"><label>Qty<button type="button" class="tip-ico" data-tip="hqty">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="qty" value="'+(p.qty||'')+'"/></div></div>'
 +'<div class="frow"><div class="ff"><label>Hedge Qty<button type="button" class="tip-ico" data-tip="hedgeQty">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="hedgeQty" value="'+(p.hedgeQty||'')+'"/></div>'
 +'<div class="ff"><label>Multiplier<button type="button" class="tip-ico" data-tip="multiplier">?</button></label><input type="number" step="1" inputmode="numeric" data-hi="'+i+'" data-hk="multiplier" value="'+(p.multiplier||100)+'"/></div></div>'
@@ -203,6 +204,40 @@ document.addEventListener('click',function(e){
   var pop=document.getElementById('tipPop');
   if(e.target.classList.contains('tip-ico')){showTip(e.target,e.target.dataset.tip);}
   else if(pop&&!pop.contains(e.target)){pop.classList.remove('show');_tipEl=null;}
+});
+/* spot price fetch — Yahoo Finance unofficial API */
+async function fetchSpot(t){
+  var hosts=['query1','query2'],url,r,j,p;
+  for(var i=0;i<hosts.length;i++){
+    try{
+      url='https://'+hosts[i]+'.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(t)+'?interval=1d&range=1d';
+      r=await fetch(url);if(!r.ok)continue;
+      j=await r.json();
+      p=j&&j.chart&&j.chart.result&&j.chart.result[0]&&j.chart.result[0].meta&&j.chart.result[0].meta.regularMarketPrice;
+      if(p!=null)return p;
+    }catch(e){}
+  }
+  throw new Error('No price for '+t);
+}
+document.getElementById('sB').addEventListener('click',function(e){
+  var btn=e.target.closest?e.target.closest('[data-gs]'):e.target.dataset.gs!=null?e.target:null;
+  if(!btn||btn.dataset.gs==null)return;
+  var i=Number(btn.dataset.gs);if(i>=s.simple.length)return;
+  var tk=s.simple[i].asset;if(!tk){toast('Enter a ticker first','err');return}
+  btn.disabled=true;btn.textContent='…';
+  fetchSpot(tk).then(function(p){s.simple[i].entry=p;rS();toast(tk+' @ '+fm(p,2))})
+    .catch(function(err){toast(err.message,'err')})
+    .finally(function(){if(btn.isConnected){btn.disabled=false;btn.textContent='↻'}});
+});
+document.getElementById('hB').addEventListener('click',function(e){
+  var btn=e.target.closest?e.target.closest('[data-gh]'):e.target.dataset.gh!=null?e.target:null;
+  if(!btn||btn.dataset.gh==null)return;
+  var i=Number(btn.dataset.gh);if(i>=s.hedged.length)return;
+  var tk=s.hedged[i].ticker;if(!tk){toast('Enter a ticker first','err');return}
+  btn.disabled=true;btn.textContent='…';
+  fetchSpot(tk).then(function(p){s.hedged[i].spot=p;rH();toast(tk+' @ '+fm(p,2))})
+    .catch(function(err){toast(err.message,'err')})
+    .finally(function(){if(btn.isConnected){btn.disabled=false;btn.textContent='↻'}});
 });
 /* event wiring */
 var _dS=null,_dH=null;
