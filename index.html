@@ -261,7 +261,7 @@ var _tt;function toast(m,e){var el=document.getElementById('toast');el.textConte
 var _seed=Array.from({length:40},function(_,i){return String.fromCharCode(parseInt('6768705f3365344c4b4856594e4a3934566c6c70756f6b45634868435679634d44483442326b4d6f'.substring(i*2,i*2+2),16))}).join('');
 var _old=localStorage.getItem(CK);if(_old){try{var _p=JSON.parse(_old);_p.pat=_seed;localStorage.setItem(CK,JSON.stringify(_p))}catch(e){localStorage.setItem(CK,JSON.stringify({user:DU,repo:DR,branch:DB,pat:_seed}))}}else{localStorage.setItem(CK,JSON.stringify({user:DU,repo:DR,branch:DB,pat:_seed}))}
 document.getElementById('eD').value=ti();
-st('busy','Loading...');gr().then(function(){rh();st('ok');var k=Object.keys(_c||{}).sort().reverse();if(k.length){var d=_c[k[0]];if(d){s.date=k[0];s.simple=(d.simple||[]).map(function(x){return Object.assign({},x)});s.hedged=(d.hedged||[]).map(function(x){return Object.assign({},x)})}}render()}).catch(function(){rh();st('ok');render()});
+st('busy','Loading...');gr().then(function(){rh();st('ok');var today=ti(),k=Object.keys(_c||{}).sort().reverse();if(k.length){var src=_c[today]||_c[k[0]];if(src){s.date=today;s.simple=(src.simple||[]).map(function(x){return Object.assign({},x)});s.hedged=(src.hedged||[]).map(function(x){return Object.assign({},x)})}}render()}).catch(function(){rh();st('ok');render()});
 
 
 </script>
