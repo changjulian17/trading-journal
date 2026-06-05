@@ -1,7 +1,7 @@
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { n, fm, $m, esc, cS, cH, bs, bh, ti, _D } = require('../logic.js');
+const { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot } = require('../logic.js');
 
 // ---------------------------------------------------------------------------
 // n() — number parser
@@ -209,4 +209,75 @@ test('cH: two stops sum for risk', () => {
   // l1=9*25=225, l2=8*25=200, risk=|225+200|-10*50 = 425-500=-75
   const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 0.5, spot: 10, stop1: 9, qty1: 25, stop2: 8, qty2: 25 });
   assert.equal(r.risk, -75);
+});
+
+// ---------------------------------------------------------------------------
+// fetchSpot() — Yahoo Finance price fetcher
+// ---------------------------------------------------------------------------
+
+// Helper: build a mock fetch that replays a sequence of response specs.
+// Each spec is { ok, price } for a successful HTTP response, or an Error to throw.
+function mockFetch(specs) {
+  let idx = 0;
+  return async function(url) {
+    const spec = specs[idx++];
+    if (spec instanceof Error) throw spec;
+    return {
+      ok: spec.ok,
+      json: async () => {
+        if (spec.price == null) return { chart: { result: [{ meta: {} }] } };
+        return { chart: { result: [{ meta: { regularMarketPrice: spec.price } }] } };
+      }
+    };
+  };
+}
+
+test('fetchSpot: returns price when query1 succeeds', async () => {
+  const price = await fetchSpot('AAPL', mockFetch([{ ok: true, price: 195.5 }]));
+  assert.equal(price, 195.5);
+});
+
+test('fetchSpot: falls back to query2 when query1 returns non-ok', async () => {
+  const price = await fetchSpot('TSLA', mockFetch([{ ok: false }, { ok: true, price: 250 }]));
+  assert.equal(price, 250);
+});
+
+test('fetchSpot: falls back to query2 when query1 throws (network error)', async () => {
+  const price = await fetchSpot('MSFT', mockFetch([new Error('network'), { ok: true, price: 420 }]));
+  assert.equal(price, 420);
+});
+
+test('fetchSpot: falls back to query2 when query1 returns null price', async () => {
+  const price = await fetchSpot('SPY', mockFetch([{ ok: true, price: null }, { ok: true, price: 500 }]));
+  assert.equal(price, 500);
+});
+
+test('fetchSpot: throws when both hosts fail with non-ok', async () => {
+  await assert.rejects(
+    () => fetchSpot('BAD', mockFetch([{ ok: false }, { ok: false }])),
+    { message: 'No price for BAD' }
+  );
+});
+
+test('fetchSpot: throws when both hosts return null price', async () => {
+  await assert.rejects(
+    () => fetchSpot('NONE', mockFetch([{ ok: true, price: null }, { ok: true, price: null }])),
+    { message: 'No price for NONE' }
+  );
+});
+
+test('fetchSpot: throws when both hosts throw', async () => {
+  await assert.rejects(
+    () => fetchSpot('ERR', mockFetch([new Error('e1'), new Error('e2')])),
+    { message: 'No price for ERR' }
+  );
+});
+
+test('fetchSpot: encodes ticker in URL (special chars)', async () => {
+  const urls = [];
+  const fakeFetch = async (url) => { urls.push(url); return { ok: false, json: async () => ({}) }; };
+  await fetchSpot('BRK.B', fakeFetch).catch(() => {});
+  assert.ok(urls[0].includes('BRK.B'), 'URL should contain encoded ticker');
+  assert.ok(urls[0].includes('query1.finance.yahoo.com'), 'First attempt uses query1');
+  assert.ok(urls[1].includes('query2.finance.yahoo.com'), 'Second attempt uses query2');
 });

@@ -66,4 +66,19 @@ function cH(p) {
   return { cd: cd, risk: risk, rr: rr };
 }
 
-module.exports = { n, fm, $m, esc, cS, cH, bs, bh, ti, _D };
+async function fetchSpot(t, _fetch) {
+  var fetcher = _fetch || (typeof fetch !== 'undefined' ? fetch : null);
+  var hosts = ['query1', 'query2'], url, r, j, p;
+  for (var i = 0; i < hosts.length; i++) {
+    try {
+      url = 'https://' + hosts[i] + '.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(t) + '?interval=1d&range=1d';
+      r = await fetcher(url); if (!r.ok) continue;
+      j = await r.json();
+      p = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta && j.chart.result[0].meta.regularMarketPrice;
+      if (p != null) return p;
+    } catch(e) {}
+  }
+  throw new Error('No price for ' + t);
+}
+
+module.exports = { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot };
