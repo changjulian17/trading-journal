@@ -141,17 +141,17 @@
         "side": "Long",
         "qty": "10",
         "multiplier": 100,
-        "delta": ".354",
+        "delta": ".36",
         "premAdj": "0",
-        "spot": "184",
+        "spot": "186.51",
         "stop1": "181.13",
-        "qty1": "32",
+        "qty1": "36",
         "stop2": "183.3",
         "qty2": "0",
         "takeProfit": "220",
         "hedgeQty": "322"
       }
     ],
-    "savedAt": "2026-06-09T03:34:21.411Z"
+    "savedAt": "2026-06-09T13:09:36.168Z"
   }
 }
