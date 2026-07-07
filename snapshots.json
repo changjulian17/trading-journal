@@ -515,5 +515,26 @@
       }
     ],
     "savedAt": "2026-07-03T02:51:01.637Z"
+  },
+  "2026-07-07": {
+    "simple": [],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".320",
+        "premAdj": "0",
+        "spot": "181",
+        "stop1": "182",
+        "qty1": "39",
+        "stop2": "182",
+        "qty2": "0",
+        "takeProfit": "220",
+        "hedgeQty": "359"
+      }
+    ],
+    "savedAt": "2026-07-07T12:31:06.384Z"
   }
 }
