@@ -580,7 +580,20 @@
     "savedAt": "2026-07-13T13:11:21.703Z"
   },
   "2026-07-14": {
-    "simple": [],
+    "simple": [
+      {
+        "asset": "VT",
+        "side": "Long",
+        "entry": "156.66",
+        "totalQty": "200",
+        "stop1": "152.2",
+        "qty1": "200",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "200",
+        "notes": "beta 1"
+      }
+    ],
     "hedged": [
       {
         "ticker": "XLK",
@@ -598,6 +611,6 @@
         "hedgeQty": "311"
       }
     ],
-    "savedAt": "2026-07-14T02:11:31.244Z"
+    "savedAt": "2026-07-14T14:06:12.553Z"
   }
 }
