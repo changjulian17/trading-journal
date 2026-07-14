@@ -584,13 +584,13 @@
       {
         "asset": "VT",
         "side": "Long",
-        "entry": "156.66",
+        "entry": "152.7",
         "totalQty": "200",
         "stop1": "152.2",
-        "qty1": "200",
-        "stop2": null,
-        "qty2": null,
-        "takeProfit": "200",
+        "qty1": "50",
+        "stop2": "155.3",
+        "qty2": "150",
+        "takeProfit": "197",
         "notes": "beta 1"
       }
     ],
@@ -600,17 +600,17 @@
         "side": "Long",
         "qty": "10",
         "multiplier": 100,
-        "delta": ".271",
+        "delta": ".281",
         "premAdj": "0",
-        "spot": "181.64",
-        "stop1": "183.4",
-        "qty1": "20",
+        "spot": "182",
+        "stop1": "175",
+        "qty1": "10",
         "stop2": "185.1",
-        "qty2": "20",
+        "qty2": "0",
         "takeProfit": "220",
-        "hedgeQty": "311"
+        "hedgeQty": "291"
       }
     ],
-    "savedAt": "2026-07-14T14:06:19.500Z"
+    "savedAt": "2026-07-14T14:14:12.977Z"
   }
 }
