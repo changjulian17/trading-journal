@@ -612,5 +612,39 @@
       }
     ],
     "savedAt": "2026-07-14T14:14:12.977Z"
+  },
+  "2026-07-15": {
+    "simple": [
+      {
+        "asset": "VT",
+        "side": "Long",
+        "entry": "157.28",
+        "totalQty": "200",
+        "stop1": "156",
+        "qty1": "50",
+        "stop2": "154.9",
+        "qty2": "150",
+        "takeProfit": "197",
+        "notes": "beta 1"
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".281",
+        "premAdj": "0",
+        "spot": "182",
+        "stop1": "175",
+        "qty1": "10",
+        "stop2": "185.1",
+        "qty2": "0",
+        "takeProfit": "220",
+        "hedgeQty": "291"
+      }
+    ],
+    "savedAt": "2026-07-15T13:11:22.770Z"
   }
 }
