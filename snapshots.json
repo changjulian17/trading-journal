@@ -692,5 +692,51 @@
       }
     ],
     "savedAt": "2026-07-16T14:27:46.536Z"
+  },
+  "2026-07-17": {
+    "simple": [
+      {
+        "asset": "VT",
+        "side": "Long",
+        "entry": "155.81",
+        "totalQty": "200",
+        "stop1": "156",
+        "qty1": "50",
+        "stop2": "154.9",
+        "qty2": "150",
+        "takeProfit": "197",
+        "notes": "beta 1"
+      },
+      {
+        "asset": "VIS",
+        "side": "Long",
+        "entry": "347.48",
+        "totalQty": "80",
+        "stop1": "343",
+        "qty1": "40",
+        "stop2": "345",
+        "qty2": "40",
+        "takeProfit": "400",
+        "notes": "INDUSTRIAL AI BENEFICIARY"
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".205",
+        "premAdj": "0",
+        "spot": "172.85",
+        "stop1": "176",
+        "qty1": "26",
+        "stop2": "175.23",
+        "qty2": "25",
+        "takeProfit": "220",
+        "hedgeQty": "256"
+      }
+    ],
+    "savedAt": "2026-07-17T08:21:14.591Z"
   }
 }
