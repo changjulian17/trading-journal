@@ -696,21 +696,9 @@
   "2026-07-17": {
     "simple": [
       {
-        "asset": "VT",
-        "side": "Long",
-        "entry": "155.81",
-        "totalQty": "200",
-        "stop1": "156",
-        "qty1": "50",
-        "stop2": "154.9",
-        "qty2": "150",
-        "takeProfit": "197",
-        "notes": "beta 1"
-      },
-      {
         "asset": "VIS",
         "side": "Long",
-        "entry": "347.48",
+        "entry": "345.3",
         "totalQty": "80",
         "stop1": "343",
         "qty1": "40",
@@ -737,6 +725,6 @@
         "hedgeQty": "174"
       }
     ],
-    "savedAt": "2026-07-18T09:13:42.290Z"
+    "savedAt": "2026-07-18T09:15:54.700Z"
   }
 }
