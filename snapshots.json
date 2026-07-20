@@ -726,5 +726,51 @@
       }
     ],
     "savedAt": "2026-07-18T09:15:54.700Z"
+  },
+  "2026-07-19": {
+    "simple": [
+      {
+        "asset": "VIS",
+        "side": "Long",
+        "entry": "344.3",
+        "totalQty": "80",
+        "stop1": "343",
+        "qty1": "40",
+        "stop2": "345",
+        "qty2": "40",
+        "takeProfit": "400",
+        "notes": "INDUSTRIAL AI BENEFICIARY"
+      },
+      {
+        "asset": "dba",
+        "side": "Long",
+        "entry": "28",
+        "totalQty": "300",
+        "stop1": "27.5",
+        "qty1": "150",
+        "stop2": "26.5",
+        "qty2": "150",
+        "takeProfit": "35",
+        "notes": "INFLATION AND AGRICULTURE DEMAND"
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".190",
+        "premAdj": "0",
+        "spot": "177",
+        "stop1": "174",
+        "qty1": "16",
+        "stop2": "178.62",
+        "qty2": "0",
+        "takeProfit": "220",
+        "hedgeQty": "174"
+      }
+    ],
+    "savedAt": "2026-07-20T14:45:40.584Z"
   }
 }
