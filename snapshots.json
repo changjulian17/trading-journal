@@ -730,18 +730,6 @@
   "2026-07-19": {
     "simple": [
       {
-        "asset": "VIS",
-        "side": "Long",
-        "entry": "344.3",
-        "totalQty": "80",
-        "stop1": "343",
-        "qty1": "40",
-        "stop2": "345",
-        "qty2": "40",
-        "takeProfit": "400",
-        "notes": "INDUSTRIAL AI BENEFICIARY"
-      },
-      {
         "asset": "dba",
         "side": "Long",
         "entry": "28",
@@ -771,6 +759,6 @@
         "hedgeQty": "174"
       }
     ],
-    "savedAt": "2026-07-20T14:45:40.584Z"
+    "savedAt": "2026-07-21T13:38:22.189Z"
   }
 }
