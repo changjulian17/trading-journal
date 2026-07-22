@@ -790,7 +790,7 @@
       {
         "asset": "dba",
         "side": "Long",
-        "entry": "28.21",
+        "entry": "28",
         "totalQty": "300",
         "stop1": "27.5",
         "qty1": "150",
@@ -802,7 +802,7 @@
       {
         "asset": "bci",
         "side": "Long",
-        "entry": "24.5",
+        "entry": "24.17",
         "totalQty": "250",
         "stop1": "23.28",
         "qty1": "150",
@@ -814,7 +814,7 @@
       {
         "asset": "vt",
         "side": "Long",
-        "entry": 156.26,
+        "entry": "155.8",
         "totalQty": "80",
         "stop1": "155.6",
         "qty1": "40",
@@ -856,6 +856,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-22T14:06:04.745Z"
+    "savedAt": "2026-07-22T14:34:26.176Z"
   }
 }
