@@ -794,7 +794,7 @@
         "totalQty": "300",
         "stop1": "27.5",
         "qty1": "150",
-        "stop2": "26.5",
+        "stop2": "28.08",
         "qty2": "150",
         "takeProfit": "35",
         "notes": "INFLATION AND AGRICULTURE DEMAND"
@@ -806,7 +806,7 @@
         "totalQty": "250",
         "stop1": "23.28",
         "qty1": "150",
-        "stop2": "21.88",
+        "stop2": "24.3",
         "qty2": "100",
         "takeProfit": null,
         "notes": "COMMODITY SUPERCYCLE"
@@ -816,7 +816,7 @@
         "side": "Long",
         "entry": 156.26,
         "totalQty": "80",
-        "stop1": "155.5",
+        "stop1": "155.6",
         "qty1": "40",
         "stop2": "154.16",
         "qty2": "40",
@@ -830,17 +830,32 @@
         "side": "Long",
         "qty": "10",
         "multiplier": 100,
-        "delta": ".221",
+        "delta": ".234",
         "premAdj": "0",
-        "spot": "179.6",
-        "stop1": "176.16",
-        "qty1": "47",
+        "spot": "180.15",
+        "stop1": "178.9",
+        "qty1": "30",
         "stop2": "178.62",
-        "qty2": "0",
+        "qty2": "30",
         "takeProfit": "220",
         "hedgeQty": "174"
+      },
+      {
+        "ticker": "xme",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "110",
+        "multiplier": 100,
+        "delta": ".465",
+        "premAdj": "1650",
+        "spot": 104.38,
+        "stop1": "103",
+        "qty1": "29",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-22T13:56:28.355Z"
+    "savedAt": "2026-07-22T14:06:04.745Z"
   }
 }
