@@ -822,6 +822,18 @@
         "qty2": "40",
         "takeProfit": null,
         "notes": "BETA 1"
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": null,
+        "totalQty": null,
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null,
+        "notes": ""
       }
     ],
     "hedged": [
@@ -856,6 +868,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-22T14:34:35.497Z"
+    "savedAt": "2026-07-23T01:50:16.315Z"
   }
 }
