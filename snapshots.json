@@ -822,16 +822,89 @@
         "qty2": "40",
         "takeProfit": null,
         "notes": "BETA 1"
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".234",
+        "premAdj": "0",
+        "spot": "180.15",
+        "stop1": "178.9",
+        "qty1": "30",
+        "stop2": "178.62",
+        "qty2": "30",
+        "takeProfit": "220",
+        "hedgeQty": "174"
+      },
+      {
+        "ticker": "xme",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "110",
+        "multiplier": 100,
+        "delta": ".465",
+        "premAdj": "1650",
+        "spot": 104.38,
+        "stop1": "103",
+        "qty1": "29",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "140"
+      }
+    ],
+    "savedAt": "2026-07-22T14:34:35.497Z"
+  },
+  "2026-07-23": {
+    "simple": [
+      {
+        "asset": "dba",
+        "side": "Long",
+        "entry": "28",
+        "totalQty": "300",
+        "stop1": "27.5",
+        "qty1": "150",
+        "stop2": "28.08",
+        "qty2": "150",
+        "takeProfit": "35",
+        "notes": "INFLATION AND AGRICULTURE DEMAND"
       },
       {
         "asset": "bci",
         "side": "Long",
-        "entry": null,
-        "totalQty": null,
-        "stop1": null,
-        "qty1": null,
-        "stop2": null,
-        "qty2": null,
+        "entry": "24.17",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.3",
+        "qty2": "100",
+        "takeProfit": null,
+        "notes": "COMMODITY SUPERCYCLE"
+      },
+      {
+        "asset": "vt",
+        "side": "Long",
+        "entry": "155.8",
+        "totalQty": "80",
+        "stop1": "155.6",
+        "qty1": "40",
+        "stop2": "154.16",
+        "qty2": "40",
+        "takeProfit": null,
+        "notes": "BETA 1"
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "51",
+        "totalQty": "5",
+        "stop1": "33",
+        "qty1": "1",
+        "stop2": "50",
+        "qty2": "4",
         "takeProfit": null,
         "notes": ""
       }
@@ -868,6 +941,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T01:50:16.315Z"
+    "savedAt": "2026-07-23T01:51:18.164Z"
   }
 }
