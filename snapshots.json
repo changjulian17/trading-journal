@@ -907,6 +907,18 @@
         "qty2": "4",
         "takeProfit": null,
         "notes": ""
+      },
+      {
+        "asset": "",
+        "side": "Long",
+        "entry": null,
+        "totalQty": null,
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null,
+        "notes": ""
       }
     ],
     "hedged": [
@@ -941,6 +953,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T01:51:18.164Z"
+    "savedAt": "2026-07-23T02:00:44.784Z"
   }
 }
