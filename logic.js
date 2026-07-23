@@ -8,7 +8,7 @@ function ti() {
 }
 
 function bs() {
-  return { asset: '', side: 'Long', entry: null, totalQty: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null, notes: '' };
+  return { asset: '', side: 'Long', entry: null, totalQty: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null, notes: '', entryLocked: false, stop1Hit: false, stop2Hit: false };
 }
 
 function bh() {
@@ -47,7 +47,11 @@ function cS(p) {
   }
   if (rd != null && rd !== 0 && tp != null)
     rr = Math.abs((tp - e) * wt / rd);
-  return { ra: rd, q: wt, rr: rr, vq: tq != null && wt != null ? Math.abs(wt - tq) < 0.001 : true };
+  var es = null, wsum = 0, wq = 0;
+  if (sp1 != null && q1 > 0) { wsum += sp1 * q1; wq += q1; }
+  if (sp2 != null && q2 > 0) { wsum += sp2 * q2; wq += q2; }
+  if (wq > 0) es = wsum / wq;
+  return { ra: rd, q: wt, rr: rr, vq: tq != null && wt != null ? Math.abs(wt - tq) < 0.001 : true, es: es };
 }
 
 function cH(p) {
