@@ -863,14 +863,16 @@
       {
         "asset": "dba",
         "side": "Long",
-        "entry": "28",
+        "entry": "28.01",
         "totalQty": "300",
         "stop1": "27.5",
         "qty1": "150",
         "stop2": "28.08",
         "qty2": "150",
         "takeProfit": "35",
-        "notes": "INFLATION AND AGRICULTURE DEMAND"
+        "notes": "INFLATION AND AGRICULTURE DEMAND",
+        "entryLocked": true,
+        "spot": "28.2"
       },
       {
         "asset": "bci",
@@ -884,20 +886,9 @@
         "takeProfit": null,
         "notes": "COMMODITY SUPERCYCLE",
         "stop1Hit": false,
-        "stop2Hit": true
-      },
-      {
-        "asset": "vt",
-        "side": "Long",
-        "entry": "155.8",
-        "totalQty": "80",
-        "stop1": "155.6",
-        "qty1": "40",
-        "stop2": "154.16",
-        "qty2": "40",
-        "takeProfit": null,
-        "notes": "BETA 1",
-        "entryLocked": false
+        "stop2Hit": false,
+        "entryLocked": true,
+        "spot": "24.67"
       },
       {
         "asset": "bci",
@@ -909,19 +900,9 @@
         "stop2": "24.4",
         "qty2": "100",
         "takeProfit": null,
-        "notes": "COMMODITY SUPERCYCLE"
-      },
-      {
-        "asset": "vt",
-        "side": "Long",
-        "entry": "156.02",
-        "totalQty": "80",
-        "stop1": "155.57",
-        "qty1": "40",
-        "stop2": "155.16",
-        "qty2": "40",
-        "takeProfit": "170",
-        "notes": "BETA 1"
+        "notes": "COMMODITY SUPERCYCLE",
+        "spot": "24.67",
+        "entryLocked": true
       }
     ],
     "hedged": [
@@ -930,13 +911,13 @@
         "side": "Long",
         "qty": "10",
         "multiplier": 100,
-        "delta": ".234",
+        "delta": ".223",
         "premAdj": "0",
-        "spot": "180.15",
-        "stop1": "178.9",
-        "qty1": "30",
-        "stop2": "178.62",
-        "qty2": "30",
+        "spot": "179.5",
+        "stop1": "177.8",
+        "qty1": "25",
+        "stop2": "177.8",
+        "qty2": "24",
         "takeProfit": "220",
         "hedgeQty": "174"
       },
@@ -946,9 +927,9 @@
         "qty": "3",
         "hedgeQty": "110",
         "multiplier": 100,
-        "delta": ".465",
+        "delta": ".455",
         "premAdj": "1650",
-        "spot": 104.38,
+        "spot": "104",
         "stop1": "103",
         "qty1": "29",
         "stop2": null,
@@ -956,6 +937,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T04:18:58.618Z"
+    "savedAt": "2026-07-23T14:25:01.702Z"
   }
 }
