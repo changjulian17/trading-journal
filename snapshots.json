@@ -899,14 +899,14 @@
       {
         "asset": "bci",
         "side": "Long",
-        "entry": "51",
-        "totalQty": "5",
-        "stop1": "33",
-        "qty1": "1",
-        "stop2": "50",
-        "qty2": "4",
+        "entry": "24.515",
+        "totalQty": "259",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.4",
+        "qty2": "100",
         "takeProfit": null,
-        "notes": ""
+        "notes": "COMMODITY SUPERCYCLE"
       },
       {
         "asset": "",
@@ -953,6 +953,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T02:00:44.784Z"
+    "savedAt": "2026-07-23T02:02:43.996Z"
   }
 }
