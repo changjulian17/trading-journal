@@ -8,7 +8,7 @@ function ti() {
 }
 
 function bs() {
-  return { asset: '', side: 'Long', entry: null, totalQty: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null, notes: '', entryLocked: false, stop1Hit: false, stop2Hit: false };
+  return { asset: '', side: 'Long', entry: null, spot: null, totalQty: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null, notes: '', entryLocked: false, stop1Hit: false, stop2Hit: false };
 }
 
 function bh() {
