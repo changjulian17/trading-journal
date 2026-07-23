@@ -929,14 +929,14 @@
         "multiplier": 100,
         "delta": ".455",
         "premAdj": "1650",
-        "spot": "104",
+        "spot": "103.65",
         "stop1": "103",
-        "qty1": "29",
+        "qty1": "26",
         "stop2": null,
         "qty2": null,
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T14:25:01.702Z"
+    "savedAt": "2026-07-23T14:28:34.351Z"
   }
 }
