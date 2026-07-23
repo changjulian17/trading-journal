@@ -151,6 +151,49 @@ test('cS: string inputs are parsed via n()', () => {
 });
 
 // ---------------------------------------------------------------------------
+// cS() — es (effective/weighted-average stop price)
+// ---------------------------------------------------------------------------
+test('es: empty position returns null', () => {
+  const r = cS(bs());
+  assert.equal(r.es, null);
+});
+
+test('es: single stop equals that stop price', () => {
+  const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 10 });
+  assert.equal(r.es, 90);
+});
+
+test('es: two equal-qty stops average evenly', () => {
+  const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 5, stop2: 100, qty2: 5 });
+  assert.equal(r.es, 95); // (90*5 + 100*5) / 10
+});
+
+test('es: two unequal-qty stops weight toward the larger quantity', () => {
+  const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 30, stop2: 100, qty2: 10 });
+  assert.equal(r.es, 92.5); // (90*30 + 100*10) / 40
+});
+
+test('es: only stop2 set (no stop1) still computes', () => {
+  const r = cS({ ...bs(), entry: 100, stop2: 95, qty2: 20 });
+  assert.equal(r.es, 95);
+});
+
+test('es: stop set but qty is 0 is excluded from the average', () => {
+  const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 0, stop2: 95, qty2: 10 });
+  assert.equal(r.es, 95);
+});
+
+test('es: independent of entry/takeProfit — computes even without entry', () => {
+  const r = cS({ stop1: 90, qty1: 5, stop2: 100, qty2: 5 });
+  assert.equal(r.es, 95);
+});
+
+test('es: string inputs are parsed via n()', () => {
+  const r = cS({ ...bs(), stop1: '90', qty1: '5', stop2: '100', qty2: '5' });
+  assert.equal(r.es, 95);
+});
+
+// ---------------------------------------------------------------------------
 // cH() — hedged / options position calculator
 // ---------------------------------------------------------------------------
 test('cH: empty position returns all nulls', () => {
