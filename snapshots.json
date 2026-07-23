@@ -872,7 +872,7 @@
         "takeProfit": "35",
         "notes": "INFLATION AND AGRICULTURE DEMAND",
         "entryLocked": true,
-        "spot": "28.2"
+        "spot": "28.29"
       },
       {
         "asset": "bci",
@@ -883,7 +883,7 @@
         "qty1": "150",
         "stop2": "24.3",
         "qty2": "100",
-        "takeProfit": null,
+        "takeProfit": "30",
         "notes": "COMMODITY SUPERCYCLE",
         "stop1Hit": false,
         "stop2Hit": false,
@@ -899,10 +899,26 @@
         "qty1": "150",
         "stop2": "24.4",
         "qty2": "100",
-        "takeProfit": null,
+        "takeProfit": "30",
         "notes": "COMMODITY SUPERCYCLE",
         "spot": "24.67",
         "entryLocked": true
+      },
+      {
+        "asset": "BCI",
+        "side": "Long",
+        "entry": "24.68",
+        "spot": "24.69",
+        "totalQty": "300",
+        "stop1": "24.21",
+        "qty1": "150",
+        "stop2": "24.51",
+        "qty2": "150",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": false
       }
     ],
     "hedged": [
@@ -937,6 +953,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T14:28:34.351Z"
+    "savedAt": "2026-07-23T14:49:54.395Z"
   }
 }
