@@ -907,6 +907,18 @@
         "qty2": "100",
         "takeProfit": null,
         "notes": "COMMODITY SUPERCYCLE"
+      },
+      {
+        "asset": "vt",
+        "side": "Long",
+        "entry": "156.02",
+        "totalQty": "80",
+        "stop1": "155.57",
+        "qty1": "40",
+        "stop2": "155.16",
+        "qty2": "40",
+        "takeProfit": "170",
+        "notes": "BETA 1"
       }
     ],
     "hedged": [
@@ -941,6 +953,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T02:05:39.897Z"
+    "savedAt": "2026-07-23T02:07:42.394Z"
   }
 }
