@@ -882,7 +882,9 @@
         "stop2": "24.3",
         "qty2": "100",
         "takeProfit": null,
-        "notes": "COMMODITY SUPERCYCLE"
+        "notes": "COMMODITY SUPERCYCLE",
+        "stop1Hit": false,
+        "stop2Hit": true
       },
       {
         "asset": "vt",
@@ -894,7 +896,8 @@
         "stop2": "154.16",
         "qty2": "40",
         "takeProfit": null,
-        "notes": "BETA 1"
+        "notes": "BETA 1",
+        "entryLocked": false
       },
       {
         "asset": "bci",
@@ -953,6 +956,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-23T04:09:34.328Z"
+    "savedAt": "2026-07-23T04:18:58.618Z"
   }
 }
