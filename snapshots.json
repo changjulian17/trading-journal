@@ -954,5 +954,104 @@
       }
     ],
     "savedAt": "2026-07-23T14:49:54.395Z"
+  },
+  "2026-07-25": {
+    "simple": [
+      {
+        "asset": "dba",
+        "side": "Long",
+        "entry": "28.01",
+        "totalQty": "300",
+        "stop1": "27.5",
+        "qty1": "150",
+        "stop2": "28.06",
+        "qty2": "150",
+        "takeProfit": "35",
+        "notes": "INFLATION AND AGRICULTURE DEMAND",
+        "entryLocked": true,
+        "spot": "28.29",
+        "stop2Hit": true
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.17",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.3",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "stop1Hit": false,
+        "stop2Hit": false,
+        "entryLocked": true,
+        "spot": "24.67"
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.515",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.4",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "spot": "24.67",
+        "entryLocked": true,
+        "stop2Hit": true
+      },
+      {
+        "asset": "BCI",
+        "side": "Long",
+        "entry": "24.68",
+        "spot": "24.69",
+        "totalQty": "300",
+        "stop1": "24.21",
+        "qty1": "150",
+        "stop2": "24.48",
+        "qty2": "150",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": true
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".223",
+        "premAdj": "0",
+        "spot": "179.5",
+        "stop1": "177.8",
+        "qty1": "25",
+        "stop2": "177.8",
+        "qty2": "24",
+        "takeProfit": "220",
+        "hedgeQty": "174"
+      },
+      {
+        "ticker": "xme",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "110",
+        "multiplier": 100,
+        "delta": ".455",
+        "premAdj": "1650",
+        "spot": "103.65",
+        "stop1": "103",
+        "qty1": "26",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "140"
+      }
+    ],
+    "savedAt": "2026-07-25T13:05:15.803Z"
   }
 }
