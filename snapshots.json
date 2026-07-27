@@ -1152,5 +1152,88 @@
       }
     ],
     "savedAt": "2026-07-26T04:00:17.156Z"
+  },
+  "2026-07-27": {
+    "simple": [
+      {
+        "asset": "dba",
+        "side": "Long",
+        "entry": "28.01",
+        "totalQty": "300",
+        "stop1": "27.5",
+        "qty1": "150",
+        "stop2": "28.06",
+        "qty2": "150",
+        "takeProfit": "35",
+        "notes": "INFLATION AND AGRICULTURE DEMAND",
+        "entryLocked": true,
+        "spot": "28.23",
+        "stop2Hit": true
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.17",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.03",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "stop1Hit": false,
+        "stop2Hit": true,
+        "entryLocked": true,
+        "spot": "24.47"
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.515",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.4",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "spot": 24.49,
+        "entryLocked": true,
+        "stop2Hit": true
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".163",
+        "premAdj": "0",
+        "spot": "175.44",
+        "stop1": "178.8",
+        "qty1": "60",
+        "stop2": "176.45",
+        "qty2": "60",
+        "takeProfit": "220",
+        "hedgeQty": "283"
+      },
+      {
+        "ticker": "xme",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "136",
+        "multiplier": 100,
+        "delta": ".435",
+        "premAdj": "1650",
+        "spot": "103",
+        "stop1": "103.2",
+        "qty1": "5",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "140"
+      }
+    ],
+    "savedAt": "2026-07-27T14:05:51.242Z"
   }
 }
