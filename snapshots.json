@@ -1291,13 +1291,13 @@
         "side": "Long",
         "qty": "10",
         "multiplier": 100,
-        "delta": ".083",
+        "delta": ".103",
         "premAdj": "0",
         "spot": "171.25",
         "stop1": "170.68",
-        "qty1": "50",
+        "qty1": "40",
         "stop2": "171.45",
-        "qty2": "50",
+        "qty2": "40",
         "takeProfit": "220",
         "hedgeQty": "183"
       },
@@ -1307,16 +1307,16 @@
         "qty": "3",
         "hedgeQty": "136",
         "multiplier": 100,
-        "delta": ".4",
+        "delta": ".416",
         "premAdj": "1650",
         "spot": "101.4",
         "stop1": "101.5",
-        "qty1": "16",
+        "qty1": "11",
         "stop2": null,
         "qty2": null,
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-07-29T11:26:48.082Z"
+    "savedAt": "2026-07-29T11:28:03.160Z"
   }
 }
