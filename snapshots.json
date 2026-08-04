@@ -1722,7 +1722,7 @@
         "stop2": "171.45",
         "qty2": "0",
         "takeProfit": "220",
-        "hedgeQty": "130"
+        "hedgeQty": "240"
       },
       {
         "ticker": "xme",
@@ -1740,6 +1740,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-08-04T14:25:41.251Z"
+    "savedAt": "2026-08-04T14:27:39.855Z"
   }
 }
