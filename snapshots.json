@@ -1800,12 +1800,27 @@
         "multiplier": 100,
         "delta": ".57",
         "premAdj": "1650",
-        "spot": "112.65",
+        "spot": "112.75",
         "stop1": "100",
         "qty1": "0",
         "stop2": null,
         "qty2": null,
         "takeProfit": "140"
+      },
+      {
+        "ticker": "xme2",
+        "side": "Long",
+        "qty": "2",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": ".58",
+        "premAdj": "636",
+        "spot": "112.75",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null
       }
     ],
     "savedAt": "2026-08-06T14:24:15.978Z"
@@ -1868,14 +1883,29 @@
         "multiplier": 100,
         "delta": ".57",
         "premAdj": "1650",
-        "spot": "112.65",
+        "spot": "112.75",
         "stop1": "100",
         "qty1": "0",
         "stop2": null,
         "qty2": null,
         "takeProfit": "140"
+      },
+      {
+        "ticker": "xme2",
+        "side": "Long",
+        "qty": "2",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": ".58",
+        "premAdj": "636",
+        "spot": "112.75",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-06T14:34:13.489Z"
+    "savedAt": "2026-08-06T14:47:32.964Z"
   }
 }
