@@ -1809,5 +1809,73 @@
       }
     ],
     "savedAt": "2026-08-06T14:24:15.978Z"
+  },
+  "2026-08-06": {
+    "simple": [
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.17",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.03",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "stop1Hit": false,
+        "stop2Hit": true,
+        "entryLocked": true,
+        "spot": "23.6"
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.515",
+        "totalQty": "250",
+        "stop1": "23.28",
+        "qty1": "150",
+        "stop2": "24.4",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "spot": "23.6",
+        "entryLocked": true,
+        "stop2Hit": true
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "10",
+        "multiplier": 100,
+        "delta": ".26",
+        "premAdj": "0",
+        "spot": "187.23",
+        "stop1": "170.68",
+        "qty1": "0",
+        "stop2": "171.45",
+        "qty2": "0",
+        "takeProfit": "220",
+        "hedgeQty": "260"
+      },
+      {
+        "ticker": "xme",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "171",
+        "multiplier": 100,
+        "delta": ".57",
+        "premAdj": "1650",
+        "spot": "112.65",
+        "stop1": "100",
+        "qty1": "0",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "140"
+      }
+    ],
+    "savedAt": "2026-08-06T14:24:24.307Z"
   }
 }
