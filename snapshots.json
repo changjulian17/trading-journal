@@ -1796,7 +1796,7 @@
         "ticker": "xme",
         "side": "Long",
         "qty": "5",
-        "hedgeQty": "171",
+        "hedgeQty": "310",
         "multiplier": 100,
         "delta": ".62",
         "premAdj": "1650",
@@ -1864,7 +1864,7 @@
         "ticker": "xme",
         "side": "Long",
         "qty": "5",
-        "hedgeQty": "171",
+        "hedgeQty": "310",
         "multiplier": 100,
         "delta": ".62",
         "premAdj": "1650",
@@ -1932,7 +1932,7 @@
         "ticker": "xme",
         "side": "Long",
         "qty": "5",
-        "hedgeQty": "171",
+        "hedgeQty": "310",
         "multiplier": 100,
         "delta": ".62",
         "premAdj": "1650",
@@ -1944,6 +1944,6 @@
         "takeProfit": "140"
       }
     ],
-    "savedAt": "2026-08-07T15:48:08.812Z"
+    "savedAt": "2026-08-07T15:49:55.400Z"
   }
 }
