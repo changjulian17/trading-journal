@@ -2151,7 +2151,7 @@
         "ticker": "XLKdec26",
         "side": "Long",
         "qty": "3",
-        "hedgeQty": "-30",
+        "hedgeQty": "116",
         "multiplier": 100,
         "delta": ".54",
         "premAdj": "4590",
@@ -2163,6 +2163,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-10T15:15:02.205Z"
+    "savedAt": "2026-08-10T15:15:17.453Z"
   }
 }
