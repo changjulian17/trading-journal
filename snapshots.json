@@ -2181,7 +2181,7 @@
         "stop1Hit": false,
         "stop2Hit": true,
         "entryLocked": true,
-        "spot": "24.35"
+        "spot": "24.41"
       },
       {
         "asset": "bci",
@@ -2194,9 +2194,25 @@
         "qty2": "100",
         "takeProfit": "30",
         "notes": "COMMODITY SUPERCYCLE",
-        "spot": "24.35",
+        "spot": "24.41",
         "entryLocked": true,
         "stop2Hit": true
+      },
+      {
+        "asset": "BCI",
+        "side": "Long",
+        "entry": "24.4",
+        "spot": "24.42",
+        "totalQty": "250",
+        "stop1": "23.9",
+        "qty1": "100",
+        "stop2": "23.46",
+        "qty2": "150",
+        "takeProfit": null,
+        "notes": "",
+        "entryLocked": true,
+        "stop1Hit": true,
+        "stop2Hit": false
       }
     ],
     "hedged": [
@@ -2205,9 +2221,9 @@
         "side": "Long",
         "qty": "12",
         "multiplier": 100,
-        "delta": ".28",
+        "delta": ".25",
         "premAdj": "0",
-        "spot": "187.4",
+        "spot": "186.94",
         "stop1": "170.68",
         "qty1": "0",
         "stop2": "171.45",
@@ -2246,6 +2262,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-11T14:14:08.720Z"
+    "savedAt": "2026-08-11T14:22:00.881Z"
   }
 }
