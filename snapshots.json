@@ -2322,7 +2322,7 @@
         "multiplier": 100,
         "delta": ".25",
         "premAdj": "0",
-        "spot": "186.94",
+        "spot": "189",
         "stop1": "170.68",
         "qty1": "0",
         "stop2": "171.45",
@@ -2333,7 +2333,7 @@
       {
         "ticker": "XMEnov26",
         "side": "Long",
-        "qty": "3",
+        "qty": "6",
         "hedgeQty": "198",
         "multiplier": 100,
         "delta": ".68",
@@ -2348,12 +2348,12 @@
       {
         "ticker": "XLKdec26",
         "side": "Long",
-        "qty": "3",
-        "hedgeQty": "162",
+        "qty": "6",
+        "hedgeQty": "114",
         "multiplier": 100,
         "delta": ".54",
         "premAdj": "4590",
-        "spot": "187.28",
+        "spot": "189",
         "stop1": "",
         "qty1": null,
         "stop2": null,
@@ -2361,6 +2361,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-12T13:37:43.076Z"
+    "savedAt": "2026-08-12T13:40:18.665Z"
   }
 }
