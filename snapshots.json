@@ -2263,5 +2263,104 @@
       }
     ],
     "savedAt": "2026-08-11T14:22:00.881Z"
+  },
+  "2026-08-12": {
+    "simple": [
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.17",
+        "totalQty": "250",
+        "stop1": "23.71",
+        "qty1": "150",
+        "stop2": "24.03",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "stop1Hit": false,
+        "stop2Hit": true,
+        "entryLocked": true,
+        "spot": "24.58"
+      },
+      {
+        "asset": "bci",
+        "side": "Long",
+        "entry": "24.515",
+        "totalQty": "250",
+        "stop1": "23.71",
+        "qty1": "150",
+        "stop2": "24.4",
+        "qty2": "100",
+        "takeProfit": "30",
+        "notes": "COMMODITY SUPERCYCLE",
+        "spot": "24.58",
+        "entryLocked": true,
+        "stop2Hit": true
+      },
+      {
+        "asset": "BCI",
+        "side": "Long",
+        "entry": "24.4",
+        "spot": "24.58",
+        "totalQty": "250",
+        "stop1": "23.9",
+        "qty1": "100",
+        "stop2": "23.46",
+        "qty2": "150",
+        "takeProfit": "",
+        "notes": "",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": false
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLKsep26",
+        "side": "Long",
+        "qty": "12",
+        "multiplier": 100,
+        "delta": ".25",
+        "premAdj": "0",
+        "spot": "186.94",
+        "stop1": "170.68",
+        "qty1": "0",
+        "stop2": "171.45",
+        "qty2": "0",
+        "takeProfit": "204",
+        "hedgeQty": "348"
+      },
+      {
+        "ticker": "XMEnov26",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "198",
+        "multiplier": 100,
+        "delta": ".68",
+        "premAdj": "1650",
+        "spot": "112.75",
+        "stop1": "100",
+        "qty1": "0",
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "140"
+      },
+      {
+        "ticker": "XLKdec26",
+        "side": "Long",
+        "qty": "3",
+        "hedgeQty": "162",
+        "multiplier": 100,
+        "delta": ".54",
+        "premAdj": "4590",
+        "spot": "187.28",
+        "stop1": "",
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null
+      }
+    ],
+    "savedAt": "2026-08-12T13:37:43.076Z"
   }
 }
