@@ -63,6 +63,8 @@ test('bh: returns correct keys with defaults', () => {
   assert.equal(p.multiplier, 100);
   assert.equal(p.premAdj, 0);
   assert.equal(p.delta, null);
+  assert.equal(p.vega, null);
+  assert.equal(p.theta, null);
 });
 test('bh: returns fresh object each call', () => {
   assert.notEqual(bh(), bh());
@@ -110,6 +112,7 @@ test('cS: short position risk is positive', () => {
 
 test('cS: R/R ratio with take profit', () => {
   const r = cS({ ...bs(), entry: 100, stop1: 90, qty1: 10, takeProfit: 120 });
+  // rr = -(120-100)/(90-100) = -(-20)/(-10) wait: -(tp-e)/(sp1-e) = -(120-100)/(90-100) = -20/-10 = 2
   assert.equal(r.rr, 2);
 });
 
