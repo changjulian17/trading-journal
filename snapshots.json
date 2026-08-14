@@ -2432,12 +2432,12 @@
       {
         "ticker": "XMEnov26",
         "side": "Long",
-        "qty": "6",
-        "hedgeQty": "302",
+        "qty": "9",
+        "hedgeQty": "390",
         "multiplier": 100,
-        "delta": ".67",
+        "delta": ".69",
         "premAdj": "1650",
-        "spot": "117.9",
+        "spot": "118.51",
         "stop1": "100",
         "qty1": "0",
         "stop2": null,
@@ -2460,6 +2460,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-14T14:08:34.702Z"
+    "savedAt": "2026-08-14T14:17:13.056Z"
   }
 }
