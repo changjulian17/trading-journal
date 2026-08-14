@@ -12,7 +12,7 @@ function bs() {
 }
 
 function bh() {
-  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, premAdj: 0, spot: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
+  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, vega: null, theta: null, premAdj: 0, spot: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
 }
 
 function n(v) {
