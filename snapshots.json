@@ -2,7 +2,7 @@
   "2026-08-17": {
     "simple": [
       {
-        "asset": "DDD",
+        "asset": "EEE",
         "side": "Long",
         "entry": null,
         "spot": null,
@@ -19,6 +19,6 @@
       }
     ],
     "hedged": [],
-    "savedAt": "2026-08-17T14:17:38.677Z"
+    "savedAt": "2026-08-17T14:33:14.323Z"
   }
 }
