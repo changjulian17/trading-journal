@@ -12,7 +12,7 @@ function bs() {
 }
 
 function bh() {
-  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, premAdj: 0, spot: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
+  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, vega: null, theta: null, premAdj: 0, spot: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
 }
 
 function n(v) {
@@ -73,14 +73,24 @@ function cH(p) {
 async function fetchSpot(t, _fetch) {
   var fetcher = _fetch || (typeof fetch !== 'undefined' ? fetch : null);
   var yahooUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(t) + '?interval=1d&range=1d';
+  // Try direct first (fast) — works if Yahoo allows the browser origin
+  try {
+    var r = await fetcher(yahooUrl);
+    if (r.ok) {
+      var j = await r.json();
+      var p = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta && j.chart.result[0].meta.regularMarketPrice;
+      if (p != null) return p;
+    }
+  } catch(e) {}
+  // Fall back to AllOrigins CORS proxy
   var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(yahooUrl);
-  var r = await fetcher(proxyUrl);
-  if (!r.ok) throw new Error('Proxy error ' + r.status);
-  var j = await r.json();
-  var p = null;
-  try { var inner = JSON.parse(j.contents); p = inner && inner.chart && inner.chart.result && inner.chart.result[0] && inner.chart.result[0].meta && inner.chart.result[0].meta.regularMarketPrice; } catch(e) {}
-  if (p == null) throw new Error('No price for ' + t);
-  return p;
+  var r2 = await fetcher(proxyUrl);
+  if (!r2.ok) throw new Error('Proxy error ' + r2.status);
+  var j2 = await r2.json();
+  var p2 = null;
+  try { var inner = JSON.parse(j2.contents); p2 = inner && inner.chart && inner.chart.result && inner.chart.result[0] && inner.chart.result[0].meta && inner.chart.result[0].meta.regularMarketPrice; } catch(e) {}
+  if (p2 == null) throw new Error('No price for ' + t);
+  return p2;
 }
 
 module.exports = { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot };
