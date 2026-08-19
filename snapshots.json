@@ -110,14 +110,14 @@
       {
         "ticker": "XLK18sep26-187.5",
         "side": "Long",
-        "qty": null,
-        "hedgeQty": null,
+        "qty": "2",
+        "hedgeQty": "0",
         "multiplier": 100,
         "delta": null,
         "vega": null,
         "theta": null,
         "premAdj": 0,
-        "spot": null,
+        "spot": "183.6",
         "stop1": null,
         "qty1": null,
         "stop2": null,
@@ -125,6 +125,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-19T14:02:09.203Z"
+    "savedAt": "2026-08-19T14:02:35.094Z"
   }
 }
