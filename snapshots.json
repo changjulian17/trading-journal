@@ -74,7 +74,7 @@
     ],
     "hedged": [
       {
-        "ticker": "XLK16dec26-187.5",
+        "ticker": "XLK18dec26-187.5",
         "side": "Long",
         "qty": "6",
         "hedgeQty": "0",
@@ -91,7 +91,7 @@
         "takeProfit": ""
       },
       {
-        "ticker": "XLK16dec26-192.5",
+        "ticker": "XLK18dec26-192.5",
         "side": "Long",
         "qty": "4",
         "hedgeQty": "0",
@@ -106,8 +106,25 @@
         "stop2": null,
         "qty2": null,
         "takeProfit": null
+      },
+      {
+        "ticker": "XLK18sep26-187.5",
+        "side": "Long",
+        "qty": null,
+        "hedgeQty": null,
+        "multiplier": 100,
+        "delta": null,
+        "vega": null,
+        "theta": null,
+        "premAdj": 0,
+        "spot": null,
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-19T14:01:38.467Z"
+    "savedAt": "2026-08-19T14:02:09.203Z"
   }
 }
