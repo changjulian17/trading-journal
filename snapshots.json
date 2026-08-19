@@ -72,7 +72,42 @@
         "stop2Hit": false
       }
     ],
-    "hedged": [],
-    "savedAt": "2026-08-19T13:57:04.958Z"
+    "hedged": [
+      {
+        "ticker": "XLK16dec26-187.5",
+        "side": "Long",
+        "qty": "6",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": "0",
+        "vega": null,
+        "theta": null,
+        "premAdj": "14.74",
+        "spot": "183.9",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": ""
+      },
+      {
+        "ticker": "XLK16dec26-192.5",
+        "side": "Long",
+        "qty": "4",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": null,
+        "vega": null,
+        "theta": null,
+        "premAdj": 0,
+        "spot": "183.9",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null
+      }
+    ],
+    "savedAt": "2026-08-19T14:01:38.467Z"
   }
 }
