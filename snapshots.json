@@ -20,5 +20,59 @@
     ],
     "hedged": [],
     "savedAt": "2026-08-17T14:33:14.323Z"
+  },
+  "2026-08-18": {
+    "simple": [
+      {
+        "asset": "BCI",
+        "side": "Long",
+        "entry": "24.4",
+        "spot": "25.07",
+        "totalQty": "300",
+        "stop1": "24.33",
+        "qty1": "150",
+        "stop2": "24.6",
+        "qty2": "150",
+        "takeProfit": "30",
+        "notes": "",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": false
+      },
+      {
+        "asset": "XLK",
+        "side": "Short",
+        "entry": "187.62",
+        "spot": "184.6",
+        "totalQty": "750",
+        "stop1": "186.92",
+        "qty1": "375",
+        "stop2": "186.07",
+        "qty2": "375",
+        "takeProfit": "175",
+        "notes": "",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": false
+      },
+      {
+        "asset": "XME",
+        "side": "Short",
+        "entry": "116.13",
+        "spot": "117.36",
+        "totalQty": "547",
+        "stop1": "118.32",
+        "qty1": "274",
+        "stop2": "119.16",
+        "qty2": "273",
+        "takeProfit": "95",
+        "notes": "",
+        "entryLocked": false,
+        "stop1Hit": false,
+        "stop2Hit": false
+      }
+    ],
+    "hedged": [],
+    "savedAt": "2026-08-19T13:57:04.958Z"
   }
 }
