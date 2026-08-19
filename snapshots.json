@@ -79,9 +79,9 @@
         "qty": "6",
         "hedgeQty": "0",
         "multiplier": 100,
-        "delta": "0",
-        "vega": null,
-        "theta": null,
+        "delta": "0.306",
+        "vega": "252.6",
+        "theta": "-.0571",
         "premAdj": "14.74",
         "spot": "183.9",
         "stop1": null,
@@ -96,10 +96,10 @@
         "qty": "4",
         "hedgeQty": "0",
         "multiplier": 100,
-        "delta": null,
-        "vega": null,
-        "theta": null,
-        "premAdj": 0,
+        "delta": ".4433",
+        "vega": ".417",
+        "theta": "-.0549",
+        "premAdj": "12.96",
         "spot": "183.9",
         "stop1": null,
         "qty1": null,
@@ -113,10 +113,10 @@
         "qty": "2",
         "hedgeQty": "0",
         "multiplier": 100,
-        "delta": null,
-        "vega": null,
-        "theta": null,
-        "premAdj": 0,
+        "delta": ".1297",
+        "vega": ".1111",
+        "theta": "-.0481",
+        "premAdj": "3.18",
         "spot": "183.6",
         "stop1": null,
         "qty1": null,
@@ -125,6 +125,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-08-19T14:02:35.094Z"
+    "savedAt": "2026-08-19T14:24:55.195Z"
   }
 }
