@@ -347,8 +347,27 @@
         "takeProfit": null,
         "expiry": "2026-09-18",
         "strike": "187.5"
+      },
+      {
+        "ticker": "QQQ",
+        "side": "Long",
+        "qty": "2",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": ".2274",
+        "vega": "1.4574",
+        "theta": "-.087",
+        "premAdj": "18.8",
+        "spot": "708.9",
+        "expiry": "2017-02-19",
+        "strike": "645",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null
       }
     ],
-    "savedAt": "2026-09-02T14:33:11.159Z"
+    "savedAt": "2026-09-02T14:35:22.060Z"
   }
 }
