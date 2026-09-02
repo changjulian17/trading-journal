@@ -238,5 +238,117 @@
       }
     ],
     "savedAt": "2026-08-20T14:37:50.868Z"
+  },
+  "2026-09-02": {
+    "simple": [
+      {
+        "asset": "BCI",
+        "side": "Long",
+        "entry": "24.4",
+        "spot": "25.27",
+        "totalQty": "320",
+        "stop1": "24.33",
+        "qty1": "160",
+        "stop2": "24.6",
+        "qty2": "160",
+        "takeProfit": "30",
+        "notes": "",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": false
+      },
+      {
+        "asset": "XLK",
+        "side": "Short",
+        "entry": "187.62",
+        "spot": "183.62",
+        "totalQty": "750",
+        "stop1": "187.47",
+        "qty1": "375",
+        "stop2": "186.88",
+        "qty2": "375",
+        "takeProfit": "175",
+        "notes": "",
+        "entryLocked": true,
+        "stop1Hit": false,
+        "stop2Hit": false
+      },
+      {
+        "asset": "XME",
+        "side": "Short",
+        "entry": "116.13",
+        "spot": "114.51",
+        "totalQty": "547",
+        "stop1": "115.92",
+        "qty1": "274",
+        "stop2": "119.64",
+        "qty2": "273",
+        "takeProfit": "95",
+        "notes": "",
+        "entryLocked": false,
+        "stop1Hit": false,
+        "stop2Hit": false
+      }
+    ],
+    "hedged": [
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "6",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": "0.306",
+        "vega": "252.6",
+        "theta": "-.0571",
+        "premAdj": "14.74",
+        "spot": "183.9",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": "",
+        "expiry": "2026-12-18",
+        "strike": "187.5"
+      },
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "4",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": ".4433",
+        "vega": ".417",
+        "theta": "-.0549",
+        "premAdj": "12.96",
+        "spot": "183.9",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null,
+        "expiry": "2026-12-18",
+        "strike": "192.5"
+      },
+      {
+        "ticker": "XLK",
+        "side": "Long",
+        "qty": "2",
+        "hedgeQty": "0",
+        "multiplier": 100,
+        "delta": ".1297",
+        "vega": ".1111",
+        "theta": "-.0481",
+        "premAdj": "3.18",
+        "spot": "183.6",
+        "stop1": null,
+        "qty1": null,
+        "stop2": null,
+        "qty2": null,
+        "takeProfit": null,
+        "expiry": "2026-09-18",
+        "strike": "187.5"
+      }
+    ],
+    "savedAt": "2026-09-02T13:53:39.162Z"
   }
 }
