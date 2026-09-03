@@ -432,7 +432,7 @@
         "vega": ".3955",
         "theta": "-.0563",
         "premAdj": "14.74",
-        "spot": "183.9",
+        "spot": "184",
         "stop1": null,
         "qty1": null,
         "stop2": null,
@@ -451,7 +451,7 @@
         "vega": ".3872",
         "theta": "-.0531",
         "premAdj": "12.96",
-        "spot": "183.9",
+        "spot": "184",
         "stop1": null,
         "qty1": null,
         "stop2": null,
@@ -470,7 +470,7 @@
         "vega": ".0306",
         "theta": "-.0221",
         "premAdj": "3.18",
-        "spot": "183.6",
+        "spot": "184",
         "stop1": null,
         "qty1": null,
         "stop2": null,
@@ -489,7 +489,7 @@
         "vega": "1.4574",
         "theta": "-.087",
         "premAdj": "18.8",
-        "spot": "708.9",
+        "spot": "712",
         "expiry": "2017-02-19",
         "strike": "645",
         "stop1": null,
@@ -499,6 +499,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-09-03T14:38:12.717Z"
+    "savedAt": "2026-09-03T14:38:58.437Z"
   }
 }
