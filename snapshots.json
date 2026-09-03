@@ -394,10 +394,10 @@
         "entry": "187.62",
         "spot": "184",
         "totalQty": "750",
-        "stop1": "183.14",
-        "qty1": "250",
+        "stop1": "183.36",
+        "qty1": "350",
         "stop2": "186.88",
-        "qty2": "500",
+        "qty2": "400",
         "takeProfit": "175",
         "notes": "",
         "entryLocked": true,
@@ -499,6 +499,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-09-03T14:38:58.437Z"
+    "savedAt": "2026-09-03T14:45:18.410Z"
   }
 }
