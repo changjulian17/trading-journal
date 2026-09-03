@@ -376,7 +376,7 @@
         "asset": "BCI",
         "side": "Long",
         "entry": "24.4",
-        "spot": "25.96",
+        "spot": "26.06",
         "totalQty": "320",
         "stop1": "24.33",
         "qty1": "160",
@@ -392,7 +392,7 @@
         "asset": "XLK",
         "side": "Short",
         "entry": "187.62",
-        "spot": "183.13",
+        "spot": "184",
         "totalQty": "750",
         "stop1": "183.14",
         "qty1": "250",
@@ -408,7 +408,7 @@
         "asset": "XME",
         "side": "Short",
         "entry": "116.13",
-        "spot": "120",
+        "spot": "118.5",
         "totalQty": "593",
         "stop1": "119.65",
         "qty1": "313",
@@ -499,6 +499,6 @@
         "takeProfit": null
       }
     ],
-    "savedAt": "2026-09-03T14:37:00.087Z"
+    "savedAt": "2026-09-03T14:38:12.717Z"
   }
 }
