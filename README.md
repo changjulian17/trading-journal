@@ -77,13 +77,19 @@ npm test
 ### Try it in Docker locally
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
 ```
 
-This uses `docker-compose.override.yml` to run standalone (no Traefik
-needed), exposing the app on `http://localhost:3000`. Requires Docker Compose
-2.24+; if your version is older, just use `npm start` for local iteration —
-Docker is only really needed to test the exact prod setup before shipping it.
+`docker-compose.local.yml` is for local testing only — it exposes the app on
+`http://localhost:3000` directly, since there's no local Traefik to route
+through. It's deliberately **not** named `docker-compose.override.yml`:
+Compose auto-merges any file with that name by default, which on a real
+server would silently publish port 3000 straight onto the public internet
+alongside (and bypassing) Traefik. Always pass it explicitly with `-f`, and
+never rename it back.
+
+On the VPS, always run plain `docker compose ...` (no `-f` flags) so only
+`docker-compose.yml` — routed through Traefik — is used.
 
 ## First-time VPS deploy (one-time setup)
 

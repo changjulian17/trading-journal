@@ -1,8 +1,0 @@
-# Picked up automatically by `docker compose up` alongside docker-compose.yml.
-# For local testing only: exposes the app on localhost:3000 directly, since
-# there's no local Traefik to route through. The traefik.* labels in the base
-# file are harmless no-ops when Traefik isn't present, so nothing to strip.
-services:
-  trading-journal:
-    ports:
-      - "3000:3000"
