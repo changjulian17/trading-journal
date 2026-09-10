@@ -152,27 +152,48 @@ docker compose logs --tail=50 trading-journal   # sanity check
 
 ## Automatic deploy on merge
 
-`.github/workflows/deploy.yml` runs the steps above over SSH, on GitHub's
-runners, every time `main` gets a new push (i.e. every merged PR) — or
-on-demand via the *Run workflow* button on the Actions tab.
+`.github/workflows/deploy.yml` runs the steps above every time `main` gets
+a new push (i.e. every merged PR) — or on-demand via the *Run workflow*
+button on the Actions tab.
 
-**One-time setup** — add these as repo secrets (Settings → Secrets and
-variables → Actions):
+It runs on a **self-hosted GitHub Actions runner living on the VPS itself**,
+not GitHub's own cloud runners. That's a deliberate choice, not the default:
+GitHub-hosted runners trying to SSH *into* the VPS hit a dead end here —
+Hostinger's network silently drops inbound connections from GitHub's cloud
+IP ranges (confirmed by Hostinger support), no matter how the VPS's own
+firewall/`sshd` are configured. A self-hosted runner sidesteps that
+entirely: the VPS reaches *out* to GitHub to pick up jobs (plain outbound
+HTTPS, always worked), so no inbound connection is needed at all.
 
-| Secret        | Value                                                              |
-|---------------|---------------------------------------------------------------------|
-| `VPS_HOST`    | VPS IP or hostname                                                   |
-| `VPS_USER`    | SSH user to deploy as                                                |
-| `VPS_SSH_KEY` | Private half of an SSH key pair, whose public half is authorized on the VPS for `VPS_USER` (`~/.ssh/authorized_keys`) |
-| `VPS_PORT`    | *(optional)* SSH port, if not 22                                     |
+**One-time setup, on the VPS:**
 
-Use a dedicated deploy key, not your personal one — put its public key only
-in that user's `authorized_keys` on the VPS, scoped to what it needs.
+1. GitHub → this repo → **Settings → Actions → Runners → New self-hosted
+   runner** → choose Linux/x64. Copy the exact `config.sh` command shown
+   (it embeds a short-lived registration token) and run it on the VPS.
+2. When prompted for extra labels during `config.sh`, add
+   `trading-journal-vps` — the workflow targets that label specifically
+   (`runs-on: [self-hosted, trading-journal-vps]`) so it won't accidentally
+   pick up some other runner later.
+3. Install it as a systemd service so it survives reboots and runs in the
+   background:
+   ```bash
+   sudo ./svc.sh install
+   sudo ./svc.sh start
+   ```
+4. Confirm it shows **Idle** (green) under Settings → Actions → Runners.
+
+No GitHub secrets are needed for this workflow — the runner already has
+whatever access the VPS itself has (it's the same machine).
+
+⚠️ **This repo is public.** The workflow only triggers on `push` to `main`
+and manual dispatch — never on `pull_request` — so an external PR can't get
+this runner to execute anything by itself; only code actually merged to
+`main` runs on it. Review PRs before merging, especially ones touching this
+workflow, the `Dockerfile`, or `docker-compose.yml` — after merge, that code
+runs with real access to the VPS, not a disposable cloud VM.
 
 The workflow assumes the VPS deploy path is `/opt/trading-journal` on
-branch `main` (matches the setup above). First connection trusts the host
-key automatically (`StrictHostKeyChecking=accept-new`) and pins it for
-future runs.
+branch `main` (matches the setup above).
 
 The data volume is untouched by this — your journal entries survive every
 redeploy.

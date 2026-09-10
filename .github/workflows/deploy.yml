@@ -1,9 +1,19 @@
 name: Deploy to VPS
 
 # Fires on every push to main (i.e. every merged PR) and can be re-run by
-# hand from the Actions tab. Runs the exact steps from README.md's "Routine
-# deploys" section, over SSH, on a GitHub-hosted runner — no self-hosted
-# runner or third-party deploy action required.
+# hand from the Actions tab. Runs on a self-hosted runner living ON the VPS
+# itself — the runner polls GitHub over an outbound connection to pick up
+# jobs, so there's no inbound SSH involved. (GitHub-hosted runners reaching
+# in over SSH hit a hard wall here: Hostinger's network silently drops
+# inbound connections from GitHub's cloud IP ranges — confirmed by
+# Hostinger support — so that approach was a dead end for this VPS.)
+#
+# Repo is public: this workflow only triggers on push to `main` (+ manual
+# dispatch), never on `pull_request`, so an external PR can't make this
+# runner execute anything by itself — only code actually merged to `main`
+# runs here. Review PRs (especially to this file, the Dockerfile, or
+# docker-compose.yml) before merging, since after merge that code runs with
+# real access to the VPS, not a disposable cloud VM.
 on:
   push:
     branches: [main]
@@ -15,38 +25,15 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, trading-journal-vps]
     steps:
-      - name: Deploy over SSH
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
+      - name: Deploy
         run: |
           set -euo pipefail
-
-          if [ -z "${VPS_HOST:-}" ] || [ -z "${VPS_USER:-}" ] || [ -z "${VPS_SSH_KEY:-}" ]; then
-            echo "::error::Missing one or more required repo secrets: VPS_HOST, VPS_USER, VPS_SSH_KEY" >&2
-            exit 1
-          fi
-
-          KEY_FILE="$(mktemp)"
-          trap 'rm -f "$KEY_FILE"' EXIT
-          printf '%s\n' "$VPS_SSH_KEY" > "$KEY_FILE"
-          chmod 600 "$KEY_FILE"
-
-          ssh -o StrictHostKeyChecking=accept-new \
-              -o ConnectTimeout=15 \
-              -p "${VPS_PORT:-22}" \
-              -i "$KEY_FILE" \
-              "$VPS_USER@$VPS_HOST" bash -s <<'REMOTE'
-            set -euo pipefail
-            cd /opt/trading-journal
-            git fetch origin
-            git checkout main
-            git pull --ff-only origin main
-            docker compose build
-            docker compose up -d
-            docker compose logs --tail=50 trading-journal
-          REMOTE
+          cd /opt/trading-journal
+          git fetch origin
+          git checkout main
+          git pull --ff-only origin main
+          docker compose build
+          docker compose up -d
+          docker compose logs --tail=50 trading-journal
