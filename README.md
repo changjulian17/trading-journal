@@ -112,20 +112,27 @@ This app has never been deployed to your VPS before. Do this once:
    `network_mode: host` and Docker-socket discovery, so no shared external
    network is required; entrypoint is `websecure`, cert resolver is
    `letsencrypt`. `docker-compose.yml`'s labels already match. Only edit the
-   `Host(...)` rule if the domain isn't `changjulian.cloud`.
+   `Host(...)` rule if you want a different subdomain than
+   `journal.changjulian.cloud`.
 4. **Start it:**
    ```bash
    docker compose up -d --build
    ```
-5. **Point your domain at the VPS**: update the domain's DNS A record to the
-   VPS's IP address (replacing wherever it pointed before, e.g. GitHub
-   Pages). Once you've confirmed traffic is flowing to the VPS, remove the
-   `CNAME` file from this repo if it's no longer needed.
+5. **Point a *subdomain* at the VPS** — add a DNS **A** record for
+   `journal.changjulian.cloud` (or whatever `Host(...)` says) pointing at the
+   VPS's IP.
+
+   ⚠️ **Do not repoint the apex domain** (`changjulian.cloud` itself) at the
+   VPS. The apex is GitHub Pages, serving a landing page plus path-based
+   project sites from other repos (`/volatility/`, `/global_macro_sentiment/`,
+   etc.). Traefik's `Host(...)` rule matches the whole domain regardless of
+   path — pointing the apex here once took all of those offline. Only ever
+   add/change a subdomain record for this app.
 6. **Verify:**
    ```bash
-   docker compose ps                        # container healthy?
-   curl http://localhost:3000/healthz        # on the VPS
-   curl -I https://your-domain/              # from anywhere else
+   docker compose ps                                 # container healthy?
+   curl http://localhost:3000/healthz                 # on the VPS
+   curl -I https://journal.changjulian.cloud/         # from anywhere else
    ```
 
 ## Routine deploys (after the one-time setup above)
