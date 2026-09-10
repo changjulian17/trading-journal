@@ -101,15 +101,12 @@ This app has never been deployed to your VPS before. Do this once:
    # edit .env: set a real APP_PASSWORD and a random SESSION_SECRET
    openssl rand -hex 32   # use this to generate SESSION_SECRET
    ```
-3. **Confirm your Traefik setup.** Open `docker-compose.yml` and check the
-   three placeholder values against whatever Traefik config already runs on
-   your VPS:
-   - `networks.traefik.external` — the Docker network name Traefik listens on
-   - `traefik.http.routers.trading-journal.entrypoints` — your HTTPS entrypoint name
-   - `traefik.http.routers.trading-journal.tls.certresolver` — your cert resolver name
-
-   Also update the `Host(...)` rule to your real domain if it isn't
-   `changjulian.cloud`.
+3. **Traefik setup** — already confirmed against this VPS's actual Traefik
+   container (`/docker/traefik`), no edits needed: it runs with
+   `network_mode: host` and Docker-socket discovery, so no shared external
+   network is required; entrypoint is `websecure`, cert resolver is
+   `letsencrypt`. `docker-compose.yml`'s labels already match. Only edit the
+   `Host(...)` rule if the domain isn't `changjulian.cloud`.
 4. **Start it:**
    ```bash
    docker compose up -d --build
