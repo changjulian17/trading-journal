@@ -130,7 +130,9 @@ This app has never been deployed to your VPS before. Do this once:
 
 ## Routine deploys (after the one-time setup above)
 
-This is what "deploy this" / "push the update" means going forward:
+Merging a PR to `main` deploys automatically — see "Automatic deploy on
+merge" below. This is what that automation does under the hood (and what to
+run by hand if you ever need to bypass it):
 
 ```bash
 # 1. push your changes to this repo (already done if you're reading a merged PR)
@@ -140,6 +142,30 @@ git fetch origin && git checkout main && git pull
 docker compose build && docker compose up -d
 docker compose logs --tail=50 trading-journal   # sanity check
 ```
+
+## Automatic deploy on merge
+
+`.github/workflows/deploy.yml` runs the steps above over SSH, on GitHub's
+runners, every time `main` gets a new push (i.e. every merged PR) — or
+on-demand via the *Run workflow* button on the Actions tab.
+
+**One-time setup** — add these as repo secrets (Settings → Secrets and
+variables → Actions):
+
+| Secret        | Value                                                              |
+|---------------|---------------------------------------------------------------------|
+| `VPS_HOST`    | VPS IP or hostname                                                   |
+| `VPS_USER`    | SSH user to deploy as                                                |
+| `VPS_SSH_KEY` | Private half of an SSH key pair, whose public half is authorized on the VPS for `VPS_USER` (`~/.ssh/authorized_keys`) |
+| `VPS_PORT`    | *(optional)* SSH port, if not 22                                     |
+
+Use a dedicated deploy key, not your personal one — put its public key only
+in that user's `authorized_keys` on the VPS, scoped to what it needs.
+
+The workflow assumes the VPS deploy path is `/opt/trading-journal` on
+branch `main` (matches the setup above). First connection trusts the host
+key automatically (`StrictHostKeyChecking=accept-new`) and pins it for
+future runs.
 
 The data volume is untouched by this — your journal entries survive every
 redeploy.
