@@ -1,0 +1,12 @@
+# For local laptop testing ONLY — NOT picked up automatically by `docker
+# compose up` (unlike docker-compose.override.yml, which Compose auto-merges
+# by default — renamed specifically to avoid that trap on a real server).
+# Run with: docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
+#
+# Exposes the app on localhost:3000 directly, since there's no local Traefik
+# to route through. The traefik.* labels in the base file are harmless
+# no-ops when Traefik isn't present, so nothing needs to be stripped.
+services:
+  trading-journal:
+    ports:
+      - "3000:3000"

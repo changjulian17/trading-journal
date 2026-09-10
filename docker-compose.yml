@@ -1,0 +1,24 @@
+services:
+  trading-journal:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - trading-journal-data:/app/data
+    labels:
+      # Confirmed against the VPS's real Traefik setup (network_mode: host,
+      # docker provider discovers containers by socket — no shared external
+      # network needed): entrypoint "websecure", cert resolver "letsencrypt".
+      - traefik.enable=true
+      - traefik.http.routers.trading-journal.rule=Host(`changjulian.cloud`)
+      - traefik.http.routers.trading-journal.entrypoints=websecure
+      - traefik.http.routers.trading-journal.tls.certresolver=letsencrypt
+      - traefik.http.services.trading-journal.loadbalancer.server.port=3000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  trading-journal-data:

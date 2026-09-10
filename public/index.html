@@ -73,15 +73,6 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 </style>
 </head>
 <body>
-<div class="modal-b h" id="ghM">
- <div class="modal"><h2>Connect to GitHub</h2><p>Snapshots stored as snapshots.json. Config in browser only.</p>
- <label>GitHub Username</label><input type="text" id="ghUser" placeholder="johndoe" autocomplete="off" />
- <label>Repository Name</label><input type="text" id="ghRepo" placeholder="trading-journal" autocomplete="off" />
- <label>Branch</label><input type="text" id="ghBranch" placeholder="main" autocomplete="off" />
- <label>Personal Access Token</label><input type="password" id="ghPat" placeholder="ghp_..." autocomplete="off" />
- <div class="mn">Token needs <b>repo</b> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=TradingJournal" target="_blank">Create one</a></div>
- <div class="ma"><button class="btn" id="ghMC" style="width:auto">Cancel</button><button class="btn bp" id="ghMS" style="width:auto">Save</button></div></div>
-</div>
 <header><h1>Trading Journal</h1><div style="display:flex;align-items:center;gap:8px"><input type="date" id="eD" style="background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-size:14px;min-height:44px" /><div class="gs" id="ghS"><div class="gd" id="ghD"></div><span id="ghL" style="font-size:11px">Not</span></div></div></header>
 <main>
 <div class="sec"><div class="sh"><span>🗂️ Overview</span></div><div class="ovr"><div class="ovc"><span class="ocl">💼 Total Equity</span><div class="ocv" id="ovEq">—</div></div><div class="ovc"><span class="ocl">⚠️ Total Risk</span><div class="ocv" id="ovRk">—</div></div></div></div>
@@ -97,22 +88,12 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 
 <script>
 /* config */
-var _r=false;CK='tjG',DU='changjulian17',DR='trading-journal',DB='main';
-function gc(){try{return JSON.parse(localStorage.getItem(CK))||{}}catch(e){return{}}}
-function hp(){return !!gc().pat}
-var _c=null,_s=null;
-function ru(){var c=gc();return 'https://raw.githubusercontent.com/'+(c.user||DU)+'/'+(c.repo||DR)+'/'+(c.branch||DB)+'/snapshots.json'}
-function hh(){return{Authorization:'token '+gc().pat,'Content-Type':'application/json','Accept':'application/vnd.github+json'}}
-function wu(){var c=gc();return 'https://api.github.com/repos/'+(c.user||DU)+'/'+(c.repo||DR)+'/contents/snapshots.json'}
-async function gr(){st('busy','Loading...');try{var r=await fetch(ru());if(r.status==404){_c={};_s=null;st('ok');return{}}if(!r.ok)throw Error(r.status);_c=await r.json();_s=null;st('ok');return _c}catch(e){_c={};st('ok');return{}}}
-async function gw(d){if(!hp()){toast('Need PAT - tap status');om();return}st('busy','Saving...');var c=gc(),u=c.user||DU,r=c.repo||DR,b=c.branch||DB,sh=_s;if(!sh){try{var x=await fetch('https://api.github.com/repos/'+u+'/'+r+'/contents/snapshots.json?ref='+b,{headers:hh()});if(x.ok)sh=(await x.json()).sha}catch(e){}}var body={message:'j '+(new Date().toISOString().slice(0,10)),content:btoa(unescape(encodeURIComponent(JSON.stringify(d,null,2)))),branch:b};if(sh)body.sha=sh;try{var x=await fetch(wu(),{method:'PUT',headers:hh(),body:JSON.stringify(body)});if(!x.ok)throw Error((await x.text()).slice(0,60));var j=await x.json();_s=j.content.sha;_c=d;st('ok');toast('Saved!');var si=document.getElementById('sbInfo');if(si)si.textContent='Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}catch(e){st('err');toast('Save failed','err');throw e}}
+var _r=false;
+var _c=null;
+async function gr(){st('busy','Loading...');try{var r=await fetch('/api/snapshots',{credentials:'same-origin'});if(r.status===401){location.href='/login.html';return{}}if(!r.ok)throw Error(r.status);_c=await r.json();st('ok');return _c}catch(e){_c={};st('err');return{}}}
+async function gw(d){st('busy','Saving...');try{var r=await fetch('/api/snapshots',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(d)});if(r.status===401){location.href='/login.html';return}if(!r.ok)throw Error(r.status);_c=d;st('ok');toast('Saved!');var si=document.getElementById('sbInfo');if(si)si.textContent='Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}catch(e){st('err');toast('Save failed','err');throw e}}
 async function el(){if(_c===null)await gr();return _c}
-function st(s,l){var d=document.getElementById('ghD'),lb=document.getElementById('ghL');d.className='gd '+s;lb.textContent=s==='ok'?(gc().repo||DR):(l||'Not')}
-document.getElementById('ghS').addEventListener('click',function(e){e.preventDefault();om()});
-document.getElementById('ghMC').addEventListener('click',cm);
-document.getElementById('ghMS').addEventListener('click',async function(){var u=document.getElementById('ghUser').value.trim(),r=document.getElementById('ghRepo').value.trim(),b=document.getElementById('ghBranch').value.trim()||'main',p=document.getElementById('ghPat').value.trim();if(!u||!r||!p){alert('Fill all fields');return}localStorage.setItem(CK,JSON.stringify({user:u,repo:r,branch:b,pat:p}));_c=null;_s=null;cm();try{await gr();rh();toast('Connected to '+r)}catch(e){toast('Failed','err')}});
-function om(){var c=gc();document.getElementById('ghUser').value=c.user||DU;document.getElementById('ghRepo').value=c.repo||DR;document.getElementById('ghBranch').value=c.branch||DB;document.getElementById('ghPat').value=c.pat||'';document.getElementById('ghM').classList.remove('h')}
-function cm(){document.getElementById('ghM').classList.add('h')}
+function st(s,l){var d=document.getElementById('ghD'),lb=document.getElementById('ghL');d.className='gd '+s;lb.textContent=l||(s==='ok'?'Synced':s==='busy'?'…':'Error')}
 /* state */
 var _D=""+String.fromCharCode(8212);
 var s={date:ti(),simple:[],hedged:[]};
@@ -224,17 +205,13 @@ document.addEventListener('click',function(e){
   if(e.target.classList.contains('tip-ico')){showTip(e.target,e.target.dataset.tip);}
   else if(pop&&!pop.contains(e.target)){pop.classList.remove('show');_tipEl=null;}
 });
-/* spot price fetch — direct Yahoo first, AllOrigins CORS proxy fallback */
+/* spot price fetch — server-side proxy (backend reuses logic.js's fetchSpot) */
 async function fetchSpot(t){
-  var yahooUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(t)+'?interval=1d&range=1d';
-  try{var r=await fetch(yahooUrl);if(r.ok){var j=await r.json(),p=j&&j.chart&&j.chart.result&&j.chart.result[0]&&j.chart.result[0].meta&&j.chart.result[0].meta.regularMarketPrice;if(p!=null)return p;}}catch(e){}
-  var proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(yahooUrl);
-  var r2=await fetch(proxyUrl);
-  if(!r2.ok)throw new Error('Proxy error '+r2.status);
-  var j2=await r2.json(),p2=null;
-  try{var inner=JSON.parse(j2.contents);p2=inner&&inner.chart&&inner.chart.result&&inner.chart.result[0]&&inner.chart.result[0].meta&&inner.chart.result[0].meta.regularMarketPrice;}catch(e){}
-  if(p2==null)throw new Error('No price for '+t);
-  return p2;
+  var r=await fetch('/api/spot?ticker='+encodeURIComponent(t),{credentials:'same-origin'});
+  if(r.status===401){location.href='/login.html';throw new Error('logged out')}
+  if(!r.ok){var j=await r.json().catch(function(){return{}});throw new Error(j.error||'spot fetch failed')}
+  var j=await r.json();
+  return j.price;
 }
 document.getElementById('sB').addEventListener('click',function(e){
   var btn=e.target.closest?e.target.closest('[data-gs]'):e.target.dataset.gs!=null?e.target:null;
