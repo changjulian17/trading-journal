@@ -1,0 +1,14 @@
+# Picked up automatically by `docker compose up` alongside docker-compose.yml.
+# Turns the prod (Traefik-routed) config into something runnable standalone on
+# a laptop, with no Traefik network required. Needs Docker Compose 2.24+ for
+# the `!reset` merge tag; if your version is older, just run `npm start`
+# locally instead (no Docker needed for that loop at all).
+services:
+  trading-journal:
+    ports:
+      - "3000:3000"
+    networks: !reset []
+    labels: !reset []
+
+networks:
+  traefik: !reset {}
