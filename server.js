@@ -46,6 +46,23 @@ app.get('/login.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+// Read-only public view — no login, no writes. Serves only the latest
+// saved snapshot; never exposes the full history or the write endpoint.
+app.get('/view', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'view.html'));
+});
+app.get('/api/public/latest', (req, res) => {
+  const all = store.readSnapshots();
+  const dates = Object.keys(all).sort();
+  const latestDate = dates[dates.length - 1];
+  const latest = latestDate ? all[latestDate] : null;
+  res.json({
+    date: latestDate || null,
+    simple: (latest && latest.simple) || [],
+    hedged: (latest && latest.hedged) || [],
+  });
+});
+
 // --- Everything below requires a valid session ---
 app.use(auth.requireAuth);
 
