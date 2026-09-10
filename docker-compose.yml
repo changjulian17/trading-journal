@@ -9,8 +9,15 @@ services:
       # Confirmed against the VPS's real Traefik setup (network_mode: host,
       # docker provider discovers containers by socket — no shared external
       # network needed): entrypoint "websecure", cert resolver "letsencrypt".
+      #
+      # Deliberately a subdomain, NOT the apex changjulian.cloud: the apex is
+      # GitHub Pages, serving a landing page plus path-based project sites
+      # (/volatility/, /global_macro_sentiment/, etc.) from other repos.
+      # Claiming the apex here would swallow every request to that domain
+      # regardless of path and take all of those offline (this happened once
+      # already — see git history / incident notes).
       - traefik.enable=true
-      - traefik.http.routers.trading-journal.rule=Host(`changjulian.cloud`)
+      - traefik.http.routers.trading-journal.rule=Host(`journal.changjulian.cloud`)
       - traefik.http.routers.trading-journal.entrypoints=websecure
       - traefik.http.routers.trading-journal.tls.certresolver=letsencrypt
       - traefik.http.services.trading-journal.loadbalancer.server.port=3000
