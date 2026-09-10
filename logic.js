@@ -12,7 +12,7 @@ function bs() {
 }
 
 function bh() {
-  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, vega: null, theta: null, premAdj: 0, spot: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
+  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, gamma: null, vega: null, theta: null, iv: null, premAdj: 0, spot: null, expiry: '', strike: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
 }
 
 function n(v) {
@@ -54,11 +54,19 @@ function cS(p) {
   return { ra: rd, q: wt, rr: rr, vq: tq != null && wt != null ? Math.abs(wt - tq) < 0.001 : true, es: es };
 }
 
-function cH(p) {
-  var q = n(p.qty), hq = n(p.hedgeQty), m = n(p.multiplier), d = n(p.delta), sp = n(p.spot),
-      s1 = n(p.stop1), q1 = n(p.qty1) || 0, s2 = n(p.stop2), q2 = n(p.qty2) || 0, tp = n(p.takeProfit);
-  var cd = null, risk = null, rr = null;
-  if (q != null && m != null && d != null) cd = q * m * d - (hq != null ? hq : 0);
+function cH(p, asOf) {
+  var q = n(p.qty), hq = n(p.hedgeQty), m = n(p.multiplier), d = n(p.delta), g = n(p.gamma), v = n(p.vega), th = n(p.theta),
+      sp = n(p.spot), s1 = n(p.stop1), q1 = n(p.qty1) || 0, s2 = n(p.stop2), q2 = n(p.qty2) || 0, tp = n(p.takeProfit),
+      strike = n(p.strike);
+  // Delta/Gamma/Vega/Theta are quoted "per contract" on the standard 100-share basis (as
+  // long-holder greeks) — sh rescales that to the actual Multiplier (100 -> 1x), and Side
+  // flips the sign to turn the quoted-long greek into this position's actual exposure.
+  var sign = p.side === 'Short' ? -1 : 1, sh = m != null ? m / 100 : 1;
+  var cd = null, posGamma = null, posVega = null, posTheta = null, risk = null, rr = null, dte = null, mny = null;
+  if (q != null && d != null) cd = sign * q * sh * d - (hq != null ? hq : 0);
+  if (q != null && g != null) posGamma = sign * q * sh * g;
+  if (q != null && v != null) posVega = sign * q * sh * v;
+  if (q != null && th != null) posTheta = sign * q * sh * th;
   if (cd != null && sp != null && (s1 != null || s2 != null)) {
     var l1 = (s1 != null && q1 != null) ? s1 * q1 : 0;
     var l2 = (s2 != null && q2 != null) ? s2 * q2 : 0;
@@ -67,7 +75,12 @@ function cH(p) {
   }
   if (risk != null && risk !== 0 && tp != null && cd != null)
     rr = Math.abs((tp - sp) * Math.abs(cd) / risk);
-  return { cd: cd, risk: risk, rr: rr };
+  if (p.expiry) {
+    var ed = new Date(p.expiry + 'T00:00:00'), jd = new Date((asOf || ti()) + 'T00:00:00');
+    if (!isNaN(ed) && !isNaN(jd)) dte = Math.round((ed - jd) / 86400000);
+  }
+  if (sp != null && sp !== 0 && strike != null) mny = (strike - sp) / sp;
+  return { cd: cd, posGamma: posGamma, posVega: posVega, posTheta: posTheta, risk: risk, rr: rr, dte: dte, mny: mny };
 }
 
 async function fetchSpot(t, _fetch) {

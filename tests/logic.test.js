@@ -63,8 +63,10 @@ test('bh: returns correct keys with defaults', () => {
   assert.equal(p.multiplier, 100);
   assert.equal(p.premAdj, 0);
   assert.equal(p.delta, null);
+  assert.equal(p.gamma, null);
   assert.equal(p.vega, null);
   assert.equal(p.theta, null);
+  assert.equal(p.iv, null);
 });
 test('bh: returns fresh object each call', () => {
   assert.notEqual(bh(), bh());
@@ -196,42 +198,81 @@ test('es: string inputs are parsed via n()', () => {
 
 // ---------------------------------------------------------------------------
 // cH() — hedged / options position calculator
+// Delta/Gamma/Vega/Theta are entered "per contract" on the standard 100-share
+// basis (as a broker/vol-book would quote them for a long holder) — e.g. an
+// ATM call is delta ≈ 50, not 0.50. Multiplier rescales that (100 -> 1x) and
+// Side (Long/Short) flips the sign to get the actual position exposure.
 // ---------------------------------------------------------------------------
 test('cH: empty position returns all nulls', () => {
   const r = cH(bh());
   assert.equal(r.cd, null);
+  assert.equal(r.posGamma, null);
+  assert.equal(r.posVega, null);
+  assert.equal(r.posTheta, null);
   assert.equal(r.risk, null);
   assert.equal(r.rr, null);
+  assert.equal(r.dte, null);
+  assert.equal(r.mny, null);
 });
 
-test('cH: cash delta = qty * multiplier * delta (no hedge)', () => {
-  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5 });
-  assert.equal(r.cd, 100);  // 2 * 100 * 0.5 - 0
+test('cH: position delta = qty * (multiplier/100) * delta (no hedge)', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 50 });
+  assert.equal(r.cd, 100);  // 2 * 1 * 50 - 0
 });
 
-test('cH: cash delta subtracts hedgeQty', () => {
-  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5, hedgeQty: 80 });
-  assert.equal(r.cd, 20);  // 2 * 100 * 0.5 - 80
+test('cH: position delta subtracts hedgeQty', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 50, hedgeQty: 80 });
+  assert.equal(r.cd, 20);  // 2 * 1 * 50 - 80
+});
+
+test('cH: multiplier other than 100 rescales the per-contract greek', () => {
+  // sh = 250/100 = 2.5 -> cd = 1 * 2.5 * 50 = 125
+  const r = cH({ ...bh(), qty: 1, multiplier: 250, delta: 50 });
+  assert.equal(r.cd, 125);
+});
+
+test('cH: Short flips the sign of the quoted-long delta', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 50, side: 'Short' });
+  assert.equal(r.cd, -100);  // -1 * 2 * 1 * 50 - 0
+});
+
+test('cH: Short a put (negative delta) gives positive exposure', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: -50, side: 'Short' });
+  assert.equal(r.cd, 100);  // -1 * 2 * 1 * -50 - 0
+});
+
+test('cH: position gamma/vega/theta scale the same way as delta', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, gamma: 1.5, vega: 40, theta: -6 });
+  assert.equal(r.posGamma, 3);     // 2 * 1 * 1.5
+  assert.equal(r.posVega, 80);     // 2 * 1 * 40
+  assert.equal(r.posTheta, -12);   // 2 * 1 * -6
+});
+
+test('cH: Short flips sign for gamma/vega/theta too (short theta collects decay)', () => {
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, gamma: 1.5, vega: 40, theta: -6, side: 'Short' });
+  assert.equal(r.posGamma, -3);
+  assert.equal(r.posVega, -80);
+  assert.equal(r.posTheta, 12);    // short theta is positive P&L per day
 });
 
 test('cH: risk with stop1 and hedgeQty', () => {
-  // cd = 2*100*0.5 - 80 = 20, sz=|cd|=20, spot=50
+  // cd = 2*1*50 - 80 = 20, sz=|cd|=20, spot=50
   // l1=45*80=3600, risk=|3600| - 50*20 = 3600 - 1000 = 2600
-  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 0.5, spot: 50, stop1: 45, qty1: 80, hedgeQty: 80 });
+  const r = cH({ ...bh(), qty: 2, multiplier: 100, delta: 50, spot: 50, stop1: 45, qty1: 80, hedgeQty: 80 });
   assert.equal(r.risk, 2600);
 });
 
 test('cH: risk uses |cd| as sz', () => {
-  // cd = 1*100*0.5 = 50, spot=10, stop1=9, qty1=50, sz=|50|=50
+  // cd = 1*1*50 = 50, spot=10, stop1=9, qty1=50, sz=|50|=50
   // risk = |9*50| - 10*50 = 450 - 500 = -50
-  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 0.5, spot: 10, stop1: 9, qty1: 50 });
+  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 50, spot: 10, stop1: 9, qty1: 50 });
   assert.equal(r.risk, -50);
 });
 
 test('cH: no R/R when risk is zero', () => {
   // make risk = 0: |l1| = sp*sz
   // cd=100, sp=9, stop1=9, qty1=100 (sz=100, l1=900, sp*sz=900) → risk=0
-  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 1, spot: 9, stop1: 9, qty1: 100, takeProfit: 20 });
+  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 100, spot: 9, stop1: 9, qty1: 100, takeProfit: 20 });
   assert.equal(r.rr, null);
 });
 
@@ -239,11 +280,11 @@ test('cH: R/R computed when risk non-zero', () => {
   // cd=100, sp=10, stop1=8, qty1=100, sz=100
   // risk = |800| - 10*100 = 800 - 1000 = -200
   // tp=15, rr = |(15-10)*100 / -200| = |500/-200| = 2.5
-  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 1, spot: 10, stop1: 8, qty1: 100, takeProfit: 15 });
+  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 100, spot: 10, stop1: 8, qty1: 100, takeProfit: 15 });
   assert.equal(r.rr, 2.5);
 });
 
-test('cH: missing delta → no cash delta', () => {
+test('cH: missing delta → no position delta', () => {
   const r = cH({ ...bh(), qty: 2, multiplier: 100 });
   assert.equal(r.cd, null);
 });
@@ -251,8 +292,29 @@ test('cH: missing delta → no cash delta', () => {
 test('cH: two stops sum for risk', () => {
   // cd=50, sp=10, stop1=9, qty1=25, stop2=8, qty2=25, sz=50
   // l1=9*25=225, l2=8*25=200, risk=|225+200|-10*50 = 425-500=-75
-  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 0.5, spot: 10, stop1: 9, qty1: 25, stop2: 8, qty2: 25 });
+  const r = cH({ ...bh(), qty: 1, multiplier: 100, delta: 50, spot: 10, stop1: 9, qty1: 25, stop2: 8, qty2: 25 });
   assert.equal(r.risk, -75);
+});
+
+test('cH: dte counts calendar days from asOf to expiry', () => {
+  const r = cH({ ...bh(), expiry: '2026-09-19' }, '2026-09-09');
+  assert.equal(r.dte, 10);
+});
+
+test('cH: dte defaults asOf to today when omitted', () => {
+  const today = ti();
+  const r = cH({ ...bh(), expiry: today });
+  assert.equal(r.dte, 0);
+});
+
+test('cH: moneyness = (strike - spot) / spot', () => {
+  const r = cH({ ...bh(), spot: 716.34, strike: 645 });
+  assert.ok(Math.abs(r.mny - (-0.0996)) < 0.0005);
+});
+
+test('cH: moneyness null when spot is 0', () => {
+  const r = cH({ ...bh(), spot: 0, strike: 100 });
+  assert.equal(r.mny, null);
 });
 
 // ---------------------------------------------------------------------------
