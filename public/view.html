@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<title>Trading Journal — Read Only</title>
+<style>
+:root{--bg:#0f1419;--panel:#1a2028;--panel-2:#232b36;--border:#2d3744;--text:#e6edf3;--muted:#8b96a5;--accent:#4a9eff;--green:#3fb950;--red:#f85149;--amber:#d29922;--input-bg:#0d1117;--touch:48px}
+*{box-sizing:border-box;margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.4;-webkit-text-size-adjust:100%}
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+header h1{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.badge{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);border:1px solid var(--amber);border-radius:100px;padding:2px 8px}
+main{padding:10px;padding-bottom:24px}.sec{background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+.sh{padding:12px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.sb{padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;align-items:start}
+.pc{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:0}
+.pc .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.pc .ch .ar{display:flex;align-items:center;gap:6px;flex:1;min-width:0}.pc .ch .ar input[type="text"]{width:auto;flex:1;min-width:0;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:10px 8px;border-radius:6px;font-size:15px;font-family:Menlo,monospace;min-height:var(--touch)}
+.pc .ch .ar select{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:8px 2px;border-radius:6px;font-size:13px;min-height:var(--touch);max-width:72px}
+.ff{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}.frow{display:flex;gap:6px}.frow .ff{flex:1;margin-bottom:6px}
+.ff label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block}
+.ff input{background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:12px 10px;border-radius:6px;font-size:16px;width:100%;font-family:Menlo,monospace;min-height:var(--touch)}
+.ff input:disabled,.pc .ch .ar input:disabled,.pc .ch .ar select:disabled{opacity:.75;cursor:default}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.cr{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
+.cv{flex:1;min-width:70px}.cv .cl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;display:block}
+.cv .cnv{padding:8px 0;font-size:15px;font-family:Menlo,monospace;font-weight:600;min-height:24px}
+.cv .cnv.p{color:var(--green)}.cv .cnv.n{color:var(--red)}.cv .cnv.md{color:var(--muted)}
+.err{color:var(--red);font-size:11px;margin-top:4px;text-align:center}
+.em{text-align:center;padding:24px;color:var(--muted);font-size:14px}
+.ovr{display:flex;gap:16px;padding:12px 14px;flex-wrap:wrap}.ovc{flex:1;min-width:110px}.ocl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}.ocv{font-size:20px;font-family:Menlo,monospace;font-weight:700}
+.st{width:100%;border-collapse:collapse;font-size:12px;font-family:Menlo,monospace;white-space:nowrap}.st th,.st td{padding:5px 10px;border:1px solid var(--border)}.st th{background:var(--panel-2);color:var(--muted);text-align:right;font-weight:600}.st th:first-child{text-align:left}.st td{text-align:right}.st td:first-child{text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.4px;background:var(--panel-2);white-space:nowrap;font-family:inherit}
+.tip-ico{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;border:1px solid var(--muted);color:var(--muted);font-size:9px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none;padding:0;line-height:1;background:transparent}
+.tip-ico:hover,.tip-ico:focus{border-color:var(--accent);color:var(--accent);outline:none}
+.tip-pop{position:fixed;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;width:260px;z-index:500;box-shadow:0 4px 20px rgba(0,0,0,.7);font-size:12px;line-height:1.5;display:none}
+.tip-pop.show{display:block}
+.tip-pop strong{display:block;color:var(--text);font-size:13px;font-weight:600;margin-bottom:4px}
+.tip-pop .tp-d{color:var(--muted)}
+.tip-pop .tp-f{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.tip-pop .tp-fl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+.tip-pop .tp-fv{color:var(--accent);font-family:Menlo,monospace;font-size:11px;word-break:break-word}
+.scrollx{overflow-x:auto}
+.foot{padding:14px;text-align:center;color:var(--muted);font-size:12px}
+@media(min-width:768px){body{font-size:13px}header{padding:12px 20px}main{padding:16px 20px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Trading Journal <span class="badge">Read only</span></h1>
+  <span id="hDate" style="color:var(--muted);font-size:12px"></span>
+</header>
+<main>
+<div class="sec"><div class="sh"><span>🗂️ Overview</span></div><div class="ovr"><div class="ovc"><span class="ocl">💼 Total Equity</span><div class="ocv" id="ovEq">—</div></div><div class="ovc"><span class="ocl">⚠️ Total Risk</span><div class="ocv" id="ovRk">—</div></div></div></div>
+<div class="sec"><div class="sh"><span>📊 Simple Positions</span></div><div class="sb" id="sB"></div></div>
+<div class="sec"><div class="sh"><span>🔄 Hedged / Options</span></div><div class="sb" id="hB"></div></div>
+<div class="sec"><div class="sh"><span>📋 Summary</span></div><div class="scrollx" style="padding:8px 12px"><table class="st" id="sumT"></table></div></div>
+</main>
+<div class="foot">Read-only snapshot — no login, no editing, nothing saved here.</div>
+<div id="tipPop" class="tip-pop"><strong id="tipT"></strong><div class="tp-d" id="tipD"></div><div class="tp-f" id="tipF"><span class="tp-fl">Formula</span><span class="tp-fv" id="tipFL"></span></div></div>
+
+<script>
+/* Same calc/format helpers as the editable app (public/index.html / logic.js) — kept in
+   sync manually, same as those two already are. This page only reads; it never writes. */
+var _D = "—";
+function n(v){if(v===null||v===void 0||v==='')return null;var x=Number(v);return isNaN(x)?null:x}
+function fm(x,d){if(x===null||x===void 0||isNaN(x))return _D;return x.toLocaleString('en-GB',{minimumFractionDigits:d||2,maximumFractionDigits:d||2})}
+function $m(x){if(x===null||x===void 0||isNaN(x))return _D;var v=Number(x);return (v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function cS(p){var e=n(p.entry),sp1=n(p.stop1),q1=n(p.qty1)||0,sp2=n(p.stop2),q2=n(p.qty2)||0,tq=n(p.totalQty),tp=n(p.takeProfit);var rd=null,wt=null,rr=null;if(e!=null&&sp1!=null&&q1>0){var l1=sp1*q1,l2=0;wt=q1;if(sp2!=null&&q2>0){l2=sp2*q2;wt+=q2}rd=Math.abs(l1+l2)-e*wt}if(rd!=null&&rd!==0&&tp!=null)rr=Math.abs((tp-e)*wt/rd);var es=null,wsum=0,wq=0;if(sp1!=null&&q1>0){wsum+=sp1*q1;wq+=q1}if(sp2!=null&&q2>0){wsum+=sp2*q2;wq+=q2}if(wq>0)es=wsum/wq;return{ra:rd,q:wt,rr:rr,vq:tq!=null&&wt!=null?Math.abs(wt-tq)<0.001:true,es:es}}
+function cH(p,asOf){var q=n(p.qty),hq=n(p.hedgeQty),m=n(p.multiplier),d=n(p.delta),g=n(p.gamma),v=n(p.vega),th=n(p.theta),sp=n(p.spot),s1=n(p.stop1),q1=n(p.qty1)||0,s2=n(p.stop2),q2=n(p.qty2)||0,tp=n(p.takeProfit),strike=n(p.strike);var sign=p.side==='Short'?-1:1,sh=m!=null?m/100:1;var cd=null,posGamma=null,posVega=null,posTheta=null,risk=null,rr=null,dte=null,mny=null;if(q!=null&&d!=null)cd=sign*q*sh*d-(hq!=null?hq:0);if(q!=null&&g!=null)posGamma=sign*q*sh*g;if(q!=null&&v!=null)posVega=sign*q*sh*v;if(q!=null&&th!=null)posTheta=sign*q*sh*th;if(cd!=null&&sp!=null&&(s1!=null||s2!=null)){var l1=(s1!=null&&q1!=null)?s1*q1:0,l2=(s2!=null&&q2!=null)?s2*q2:0;var sz=Math.abs(cd);risk=Math.abs(l1+l2)-sp*sz}if(risk!=null&&risk!==0&&tp!=null&&cd!=null)rr=Math.abs((tp-sp)*Math.abs(cd)/risk);if(p.expiry){var ed=new Date(p.expiry+'T00:00:00'),jd=new Date((asOf||'')+'T00:00:00');if(!isNaN(ed)&&!isNaN(jd))dte=Math.round((ed-jd)/86400000)}if(sp!=null&&sp!==0&&strike!=null)mny=(strike-sp)/sp;return{cd:cd,posGamma:posGamma,posVega:posVega,posTheta:posTheta,risk:risk,rr:rr,dte:dte,mny:mny}}
+
+var s = { date: '', simple: [], hedged: [] };
+
+function rOV(){
+  var eq=0,rk=0;
+  s.simple.forEach(function(p){var e=n(p.entry),q=(n(p.qty1)||0)+(n(p.qty2)||0);if(e!=null&&q>0)eq+=e*q;var r=cS(p);if(r.ra!=null)rk+=Math.abs(r.ra)});
+  s.hedged.forEach(function(p){var r=cH(p,s.date),sp=n(p.spot);if(sp!=null&&r.cd!=null)eq+=sp*Math.abs(r.cd);if(r.risk!=null)rk+=Math.abs(r.risk)});
+  document.getElementById('ovEq').textContent = eq>0?$m(eq):_D;
+  document.getElementById('ovRk').textContent = rk>0?$m(rk):_D;
+}
+
+function rS(){
+  var c=document.getElementById('sB'); c.innerHTML='';
+  if(!s.simple.length){c.innerHTML='<div class="em">No simple positions in this snapshot</div>';return}
+  s.simple.forEach(function(p,i){
+    var r=cS(p);
+    c.innerHTML+='<div class="pc"><div class="ch"><div class="ar"><input type="text" value="'+esc(p.asset)+'" disabled/>'
+      +'<button type="button" class="tip-ico" data-tip="side">?</button><select disabled><option'+(p.side==='Long'?' selected':'')+'>Long</option><option'+(p.side==='Short'?' selected':'')+'>Short</option></select></div></div>'
+      +'<div class="frow"><div class="ff"><label>Entry</label><input type="number" value="'+(p.entry!=null?p.entry:'')+'" disabled/></div>'
+      +'<div class="ff"><label>Spot</label><input type="number" value="'+(p.spot!=null?p.spot:'')+'" disabled/></div></div>'
+      +'<div class="ff"><label>📦 Ttl Qty</label><input type="number" value="'+(p.totalQty!=null?p.totalQty:'')+'" disabled/></div>'
+      +'<div class="frow"><div class="ff"><label>🛑 Stop 1</label><input type="number" value="'+(p.stop1!=null?p.stop1:'')+'" disabled/></div>'
+      +'<div class="ff"><label>Qty 1</label><input type="number" value="'+(p.qty1!=null?p.qty1:'')+'" disabled/></div></div>'
+      +'<div class="frow"><div class="ff"><label>🛑 Stop 2</label><input type="number" value="'+(p.stop2!=null?p.stop2:'')+'" disabled/></div>'
+      +'<div class="ff"><label>Qty 2</label><input type="number" value="'+(p.qty2!=null?p.qty2:'')+'" disabled/></div></div>'
+      +'<div class="ff"><label>🎯 TP</label><input type="number" value="'+(p.takeProfit!=null?p.takeProfit:'')+'" disabled/></div>'
+      +(p.notes?'<div class="ff"><label>📝 Notes</label><input type="text" value="'+esc(p.notes)+'" disabled/></div>':'')
+      +'<div class="cr"><div class="cv"><span class="cl">⚠️ Risk</span><div class="cnv md">'+(r.ra!=null?$m(r.ra):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">🎚️ Eff Stop</span><div class="cnv md">'+(r.es!=null?$m(r.es):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">⚖️ R/R</span><div class="cnv md">'+(r.rr!=null?fm(r.rr,2)+'x':_D)+'</div></div></div>'
+      +'</div>';
+  });
+}
+
+function rH(){
+  var c=document.getElementById('hB'); c.innerHTML='';
+  if(!s.hedged.length){c.innerHTML='<div class="em">No hedged/options positions in this snapshot</div>';return}
+  s.hedged.forEach(function(p,i){
+    var r=cH(p,s.date);
+    c.innerHTML+='<div class="pc"><div class="ch"><div class="ar"><input type="text" value="'+esc(p.ticker)+'" disabled/>'
+      +'<select disabled><option'+(p.side==='Long'?' selected':'')+'>Long</option><option'+(p.side==='Short'?' selected':'')+'>Short</option></select></div></div>'
+      +'<div class="frow"><div class="ff"><label>Spot</label><input type="number" value="'+(p.spot!=null?p.spot:'')+'" disabled/></div>'
+      +'<div class="ff"><label>Qty</label><input type="number" value="'+(p.qty!=null?p.qty:'')+'" disabled/></div></div>'
+      +'<div class="frow"><div class="ff"><label>📅 Expiry</label><input type="date" value="'+(p.expiry||'')+'" disabled/></div>'
+      +'<div class="ff"><label>💥 Strike</label><input type="number" value="'+(p.strike!=null?p.strike:'')+'" disabled/></div></div>'
+      +'<div class="frow"><div class="ff"><label>🛡️ Hedge Qty</label><input type="number" value="'+(p.hedgeQty!=null?p.hedgeQty:'')+'" disabled/></div>'
+      +'<div class="ff"><label>✖️ Multiplier</label><input type="number" value="'+(p.multiplier||100)+'" disabled/></div></div>'
+      +'<div class="frow"><div class="ff"><label>Δ Delta</label><input type="number" value="'+(p.delta!=null?p.delta:'')+'" disabled/></div>'
+      +'<div class="ff"><label>Γ Gamma</label><input type="number" value="'+(p.gamma!=null?p.gamma:'')+'" disabled/></div></div>'
+      +'<div class="frow"><div class="ff"><label>🌊 Vega</label><input type="number" value="'+(p.vega!=null?p.vega:'')+'" disabled/></div>'
+      +'<div class="ff"><label>⏳ Theta</label><input type="number" value="'+(p.theta!=null?p.theta:'')+'" disabled/></div></div>'
+      +'<div class="frow"><div class="ff"><label>％ IV</label><input type="number" value="'+(p.iv!=null?p.iv:'')+'" disabled/></div>'
+      +'<div class="ff"><label>💰 Premium</label><input type="number" value="'+(p.premAdj!=null?p.premAdj:'')+'" disabled/></div></div>'
+      +'<div class="cr"><div class="cv"><span class="cl">⚡ Position Δ (sh)</span><div class="cnv md">'+(r.cd!=null?fm(r.cd,2):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">Γ Position</span><div class="cnv md">'+(r.posGamma!=null?fm(r.posGamma,3):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">🌊 Vega $/pt</span><div class="cnv md">'+(r.posVega!=null?$m(r.posVega):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">⏳ Theta $/day</span><div class="cnv md">'+(r.posTheta!=null?$m(r.posTheta):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">📅 DTE</span><div class="cnv md">'+(r.dte!=null?fm(r.dte,0):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">💥 Mny</span><div class="cnv md">'+(r.mny!=null?fm(r.mny*100,1)+'%':_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">⚠️ Risk</span><div class="cnv '+(r.risk!=null?(r.risk>0?'n':''):'md')+'">'+(r.risk!=null?$m(r.risk):_D)+'</div></div>'
+      +'<div class="cv"><span class="cl">⚖️ R/R</span><div class="cnv md">'+(r.rr!=null?fm(r.rr,2)+'x':_D)+'</div></div></div>'
+      +'</div>';
+  });
+}
+
+function rT(){
+  var tbl=document.getElementById('sumT');
+  var cols=[];
+  s.simple.forEach(function(p,i){var r=cS(p);cols.push({lbl:p.asset||('S'+(i+1)),date:s.date,ticker:p.asset,side:p.side,qty:r.q,mult:1,delta:1,vega:null,theta:null,cd:r.q,risk:r.ra,entry:n(p.entry),spot:n(p.spot)!=null?n(p.spot):n(p.entry),rr:r.rr,tp:n(p.takeProfit)})});
+  s.hedged.forEach(function(p,i){var r=cH(p,s.date);cols.push({lbl:p.ticker||('H'+(i+1)),date:s.date,ticker:p.ticker,side:p.side,qty:n(p.qty),mult:n(p.multiplier),delta:n(p.delta),gamma:n(p.gamma),vega:n(p.vega),theta:n(p.theta),iv:n(p.iv),dte:r.dte,mny:r.mny,cd:r.cd,posGamma:r.posGamma,posVega:r.posVega,posTheta:r.posTheta,risk:r.risk,spot:n(p.spot),strike:n(p.strike),expiry:p.expiry||null,rr:r.rr,tp:n(p.takeProfit)})});
+  if(!cols.length){tbl.innerHTML='<tbody><tr><td class="em">No positions in this snapshot</td></tr></tbody>';return}
+  function fN(x){return x!=null?x.toLocaleString('en-GB',{maximumFractionDigits:2}):_D}
+  var ROWS=[['Ticker',function(c){return esc(c.ticker||'')||_D}],['L/S',function(c){return c.side||_D}],['Qty',function(c){return fN(c.qty)}],['Strike',function(c){return c.strike!=null?$m(c.strike):_D}],['Expiry',function(c){return c.expiry||_D}],['DTE',function(c){return c.dte!=null?fN(c.dte):_D}],['Moneyness',function(c){return c.mny!=null?fm(c.mny*100,1)+'%':_D}],['IV',function(c){return c.iv!=null?fm(c.iv,1)+'%':_D}],['Delta (per ctr)',function(c){return c.delta!=null?fm(c.delta,3):_D}],['Gamma (per ctr)',function(c){return c.gamma!=null?fm(c.gamma,4):_D}],['Vega (per ctr)',function(c){return c.vega!=null?fm(c.vega,4):_D}],['Theta (per ctr)',function(c){return c.theta!=null?fm(c.theta,4):_D}],['Position Delta (sh)',function(c){return fN(c.cd)}],['Position Gamma',function(c){return c.posGamma!=null?fm(c.posGamma,3):_D}],['Position Vega ($/pt)',function(c){return c.posVega!=null?$m(c.posVega):_D}],['Position Theta ($/day)',function(c){return c.posTheta!=null?$m(c.posTheta):_D}],['Risk',function(c){return c.risk!=null?$m(c.risk):_D}],['Entry',function(c){return c.entry!=null?$m(c.entry):_D}],['Spot',function(c){return c.spot!=null?$m(c.spot):_D}],['R/R',function(c){return c.rr!=null?fm(c.rr,4)+'x':_D}],['TP',function(c){return c.tp!=null?$m(c.tp):_D}]];
+  var h='<thead><tr><th></th>';cols.forEach(function(c){h+='<th>'+esc(c.lbl)+'</th>'});h+='</tr></thead><tbody>';
+  ROWS.forEach(function(row){h+='<tr><td>'+row[0]+'</td>';cols.forEach(function(c){h+='<td>'+row[1](c)+'</td>'});h+='</tr>'});
+  tbl.innerHTML=h+'</tbody>';
+}
+
+/* tooltips — informational only, same content as the editable app */
+var TIP={
+  side:{t:'Direction',d:'Long — buy first, profit if price rises.\nShort — sell first, profit if price falls.'}
+};
+var _tipEl=null;
+function showTip(btn,key){
+  var pop=document.getElementById('tipPop'),t=TIP[key];
+  if(!t)return;
+  if(_tipEl===btn&&pop.classList.contains('show')){pop.classList.remove('show');_tipEl=null;return}
+  _tipEl=btn;
+  document.getElementById('tipT').textContent=t.t;
+  document.getElementById('tipD').textContent=t.d;
+  document.getElementById('tipF').style.display='none';
+  pop.classList.add('show');
+  var r=btn.getBoundingClientRect(),pw=260,left=r.left,top=r.bottom+8;
+  if(left+pw>window.innerWidth-8)left=window.innerWidth-pw-8;
+  if(left<8)left=8;
+  if(top+200>window.innerHeight)top=Math.max(8,r.top-200);
+  pop.style.left=left+'px';pop.style.top=top+'px';
+}
+document.addEventListener('click',function(e){
+  var pop=document.getElementById('tipPop');
+  if(e.target.classList.contains('tip-ico')){showTip(e.target,e.target.dataset.tip)}
+  else if(pop&&!pop.contains(e.target)){pop.classList.remove('show');_tipEl=null}
+});
+
+function render(){
+  document.getElementById('hDate').textContent = s.date ? ('Snapshot: '+s.date) : '';
+  rS(); rH(); rT(); rOV();
+}
+
+fetch('/api/public/latest', {credentials:'same-origin'})
+  .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json() })
+  .then(function(data){
+    s.date = data.date || '';
+    s.simple = data.simple || [];
+    s.hedged = data.hedged || [];
+    if(!s.date){
+      document.getElementById('sB').innerHTML='<div class="em">No snapshot saved yet</div>';
+      document.getElementById('hB').innerHTML='';
+    }
+    render();
+  })
+  .catch(function(){
+    document.getElementById('hDate').textContent='Failed to load';
+    document.getElementById('sB').innerHTML='<div class="em">Could not load snapshot</div>';
+  });
+</script>
+</body>
+</html>
