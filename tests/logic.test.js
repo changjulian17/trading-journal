@@ -1,7 +1,7 @@
 'use strict';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot } = require('../logic.js');
+const { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot, groupStructures } = require('../logic.js');
 
 // ---------------------------------------------------------------------------
 // n() — number parser
@@ -67,6 +67,15 @@ test('bh: returns correct keys with defaults', () => {
   assert.equal(p.vega, null);
   assert.equal(p.theta, null);
   assert.equal(p.iv, null);
+  assert.equal(p.theoEntry, null);
+  assert.equal(p.ivRank, null);
+  assert.equal(p.trailingRv, null);
+  assert.equal(p.rvForecast, null);
+  assert.equal(p.commission, null);
+  assert.equal(p.rehedgeMode, 'delta');
+  assert.equal(p.rehedgeValue, null);
+  assert.equal(p.timeExitDte, null);
+  assert.equal(p.notes, '');
 });
 test('bh: returns fresh object each call', () => {
   assert.notEqual(bh(), bh());
@@ -315,6 +324,118 @@ test('cH: moneyness = (strike - spot) / spot', () => {
 test('cH: moneyness null when spot is 0', () => {
   const r = cH({ ...bh(), spot: 0, strike: 100 });
   assert.equal(r.mny, null);
+});
+
+// ---------------------------------------------------------------------------
+// cH() — edge (RV forecast vs IV bought) and maxLoss (defined-risk, Long only)
+// ---------------------------------------------------------------------------
+test('cH: edge = rvForecast - iv', () => {
+  const r = cH({ ...bh(), iv: 25, rvForecast: 32 });
+  assert.equal(r.edge, 7);
+});
+
+test('cH: edge negative when forecast below IV bought', () => {
+  const r = cH({ ...bh(), iv: 30, rvForecast: 18 });
+  assert.equal(r.edge, -12);
+});
+
+test('cH: edge null when rvForecast missing', () => {
+  const r = cH({ ...bh(), iv: 25 });
+  assert.equal(r.edge, null);
+});
+
+test('cH: edge null when iv missing', () => {
+  const r = cH({ ...bh(), rvForecast: 25 });
+  assert.equal(r.edge, null);
+});
+
+test('cH: maxLoss = premium * qty * (multiplier/100) for a Long leg', () => {
+  const r = cH({ ...bh(), side: 'Long', qty: 2, multiplier: 100, premAdj: 4.35 });
+  assert.equal(r.maxLoss, 8.7);
+});
+
+test('cH: maxLoss rescales with a non-standard multiplier', () => {
+  const r = cH({ ...bh(), side: 'Long', qty: 1, multiplier: 250, premAdj: 2 });
+  assert.equal(r.maxLoss, 5);
+});
+
+test('cH: maxLoss null for a Short leg (undefined risk)', () => {
+  const r = cH({ ...bh(), side: 'Short', qty: 2, multiplier: 100, premAdj: 4.35 });
+  assert.equal(r.maxLoss, null);
+});
+
+test('cH: maxLoss null when premium missing', () => {
+  // bh() defaults premAdj to 0 (a valid $0 premium), so explicitly null it out here.
+  const r = cH({ ...bh(), side: 'Long', qty: 2, multiplier: 100, premAdj: null });
+  assert.equal(r.maxLoss, null);
+});
+
+// ---------------------------------------------------------------------------
+// groupStructures() — one row per (ticker, expiry), matching blotter discipline
+// ---------------------------------------------------------------------------
+test('groupStructures: empty input returns empty array', () => {
+  assert.deepEqual(groupStructures([]), []);
+  assert.deepEqual(groupStructures(null), []);
+});
+
+test('groupStructures: single leg becomes a 1-leg structure using its own IV', () => {
+  const g = groupStructures([{ ...bh(), ticker: 'NVDA', expiry: '2026-10-16', iv: 41 }]);
+  assert.equal(g.length, 1);
+  assert.equal(g[0].ticker, 'NVDA');
+  assert.equal(g[0].legCount, 1);
+  assert.equal(g[0].weightedIv, 41);
+});
+
+test('groupStructures: two legs same ticker+expiry merge into one structure', () => {
+  const call = { ...bh(), ticker: 'spy', expiry: '2026-10-16', qty: 1, multiplier: 100, vega: 40, iv: 20 };
+  const put  = { ...bh(), ticker: 'SPY', expiry: '2026-10-16', qty: 1, multiplier: 100, vega: 40, iv: 22 };
+  const g = groupStructures([call, put]);
+  assert.equal(g.length, 1);
+  assert.equal(g[0].legCount, 2);
+  // equal vega weights -> simple average of 20 and 22
+  assert.equal(g[0].weightedIv, 21);
+});
+
+test('groupStructures: ticker grouping is case-insensitive', () => {
+  const a = { ...bh(), ticker: 'qqq', expiry: '2026-11-20' };
+  const b = { ...bh(), ticker: 'QQQ', expiry: '2026-11-20' };
+  const g = groupStructures([a, b]);
+  assert.equal(g.length, 1);
+  assert.equal(g[0].legCount, 2);
+});
+
+test('groupStructures: different expiry splits into separate structures', () => {
+  const a = { ...bh(), ticker: 'SPY', expiry: '2026-10-16' };
+  const b = { ...bh(), ticker: 'SPY', expiry: '2026-11-20' };
+  const g = groupStructures([a, b]);
+  assert.equal(g.length, 2);
+});
+
+test('groupStructures: weightedIv weights by |position vega|, not raw vega', () => {
+  // leg A: qty 1, vega 10 -> posVega 10 (weight 10, iv 20)
+  // leg B: qty 2, vega 10 -> posVega 20 (weight 20, iv 30)
+  // weighted = (10*20 + 20*30) / 30 = 26.667
+  const a = { ...bh(), ticker: 'IWM', expiry: '2026-10-16', qty: 1, multiplier: 100, vega: 10, iv: 20 };
+  const b = { ...bh(), ticker: 'IWM', expiry: '2026-10-16', qty: 2, multiplier: 100, vega: 10, iv: 30 };
+  const g = groupStructures([a, b]);
+  assert.ok(Math.abs(g[0].weightedIv - 26.667) < 0.01);
+});
+
+test('groupStructures: premiumTotal nets Short legs against Long legs', () => {
+  // long call premium 5 (debit), short put premium 2 (credit) -> net debit 3
+  const longCall = { ...bh(), ticker: 'TLT', expiry: '2026-10-16', side: 'Long', qty: 1, multiplier: 100, premAdj: 5 };
+  const shortPut  = { ...bh(), ticker: 'TLT', expiry: '2026-10-16', side: 'Short', qty: 1, multiplier: 100, premAdj: 2 };
+  const g = groupStructures([longCall, shortPut]);
+  assert.equal(g[0].premiumTotal, 3);
+});
+
+test('groupStructures: edge = rvForecast (avg across legs) - weightedIv', () => {
+  const a = { ...bh(), ticker: 'GLD', expiry: '2026-10-16', qty: 1, multiplier: 100, vega: 10, iv: 20, rvForecast: 30 };
+  const b = { ...bh(), ticker: 'GLD', expiry: '2026-10-16', qty: 1, multiplier: 100, vega: 10, iv: 20, rvForecast: 34 };
+  const g = groupStructures([a, b]);
+  assert.equal(g[0].weightedIv, 20);
+  assert.equal(g[0].rvForecast, 32); // avg(30,34)
+  assert.equal(g[0].edge, 12);
 });
 
 // ---------------------------------------------------------------------------
