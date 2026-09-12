@@ -12,7 +12,8 @@ function bs() {
 }
 
 function bh() {
-  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, gamma: null, vega: null, theta: null, iv: null, premAdj: 0, spot: null, expiry: '', strike: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null };
+  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, gamma: null, vega: null, theta: null, iv: null, premAdj: 0, spot: null, expiry: '', strike: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null,
+    theoEntry: null, ivRank: null, trailingRv: null, rvForecast: null, commission: null, rehedgeMode: 'delta', rehedgeValue: null, timeExitDte: null, notes: '' };
 }
 
 function n(v) {
@@ -80,7 +81,49 @@ function cH(p, asOf) {
     if (!isNaN(ed) && !isNaN(jd)) dte = Math.round((ed - jd) / 86400000);
   }
   if (sp != null && sp !== 0 && strike != null) mny = (strike - sp) / sp;
-  return { cd: cd, posGamma: posGamma, posVega: posVega, posTheta: posTheta, risk: risk, rr: rr, dte: dte, mny: mny };
+  // Edge is the actual gamma-scalp thesis: your forward RV view vs. the IV you paid.
+  // Deliberately compared against RV forecast, never trailingRv (that's backward-looking, a
+  // fact, not a view) — see README "Gamma-Scalp Initial Conditions".
+  var rvf = n(p.rvForecast), iv = n(p.iv);
+  var edge = (rvf != null && iv != null) ? (rvf - iv) : null;
+  // Max loss only has a clean definition for a long (defined-risk) leg — premium paid is the
+  // cap. A short leg's risk is undefined/unbounded here, so it's left null rather than guessed.
+  var prem = n(p.premAdj);
+  var maxLoss = (p.side !== 'Short' && prem != null && q != null) ? prem * q * sh : null;
+  return { cd: cd, posGamma: posGamma, posVega: posVega, posTheta: posTheta, risk: risk, rr: rr, dte: dte, mny: mny, edge: edge, maxLoss: maxLoss };
+}
+
+// Groups hedged legs into one row per structure (same ticker + expiry), matching the
+// blotter-discipline convention of logging a straddle/strangle as one record, not N.
+// weightedIv is vega-weighted across legs (falls back to the lone leg's IV when no vega is
+// available to weight with). premiumTotal/theoTotal are net signed sums (Short legs subtract).
+function groupStructures(hedged) {
+  var groups = {}, order = [];
+  (hedged || []).forEach(function(p, idx) {
+    var key = (p.ticker || '').toUpperCase() + '|' + (p.expiry || '');
+    if (!groups[key]) { groups[key] = { ticker: p.ticker || '', expiry: p.expiry || '', legs: [] }; order.push(key); }
+    groups[key].legs.push({ idx: idx, leg: p });
+  });
+  return order.map(function(key) {
+    var legs = groups[key].legs;
+    var wSum = 0, wIvSum = 0, premTotal = 0, theoTotal = 0, rvVals = [];
+    legs.forEach(function(entry) {
+      var p = entry.leg, r = cH(p), sign = p.side === 'Short' ? -1 : 1;
+      var m = n(p.multiplier), sh = m != null ? m / 100 : 1, q = n(p.qty);
+      var w = r.posVega != null ? Math.abs(r.posVega) : null, iv = n(p.iv);
+      if (w != null && iv != null) { wSum += w; wIvSum += w * iv; }
+      var prem = n(p.premAdj);
+      if (prem != null && q != null) premTotal += sign * prem * q * sh;
+      var theo = n(p.theoEntry);
+      if (theo != null && q != null) theoTotal += sign * theo * q * sh;
+      var rv = n(p.rvForecast);
+      if (rv != null) rvVals.push(rv);
+    });
+    var weightedIv = wSum > 0 ? wIvSum / wSum : (n(legs[0].leg.iv) != null ? n(legs[0].leg.iv) : null);
+    var rvForecast = rvVals.length ? rvVals.reduce(function(a, b) { return a + b; }, 0) / rvVals.length : null;
+    var edge = (rvForecast != null && weightedIv != null) ? (rvForecast - weightedIv) : null;
+    return { ticker: groups[key].ticker, expiry: groups[key].expiry, legIdx: legs.map(function(e) { return e.idx; }), legCount: legs.length, weightedIv: weightedIv, rvForecast: rvForecast, edge: edge, premiumTotal: premTotal, theoTotal: theoTotal };
+  });
 }
 
 async function fetchSpot(t, _fetch) {
@@ -106,4 +149,4 @@ async function fetchSpot(t, _fetch) {
   return p2;
 }
 
-module.exports = { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot };
+module.exports = { n, fm, $m, esc, cS, cH, bs, bh, ti, _D, fetchSpot, groupStructures };
