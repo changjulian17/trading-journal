@@ -396,6 +396,17 @@ test('groupStructures: two legs same ticker+expiry merge into one structure', ()
   assert.equal(g[0].weightedIv, 21);
 });
 
+test('groupStructures: legIdx carries the original s.hedged indices for each leg, in order', () => {
+  const call = { ...bh(), ticker: 'SPY', expiry: '2026-10-16' };
+  const other = { ...bh(), ticker: 'QQQ', expiry: '2026-10-16' };
+  const put = { ...bh(), ticker: 'SPY', expiry: '2026-10-16' };
+  const g = groupStructures([call, other, put]);
+  const spy = g.find(x => x.ticker === 'SPY');
+  assert.deepEqual(spy.legIdx, [0, 2]);
+  const qqq = g.find(x => x.ticker === 'QQQ');
+  assert.deepEqual(qqq.legIdx, [1]);
+});
+
 test('groupStructures: ticker grouping is case-insensitive', () => {
   const a = { ...bh(), ticker: 'qqq', expiry: '2026-11-20' };
   const b = { ...bh(), ticker: 'QQQ', expiry: '2026-11-20' };

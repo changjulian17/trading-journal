@@ -99,16 +99,16 @@ function cH(p, asOf) {
 // available to weight with). premiumTotal/theoTotal are net signed sums (Short legs subtract).
 function groupStructures(hedged) {
   var groups = {}, order = [];
-  (hedged || []).forEach(function(p) {
+  (hedged || []).forEach(function(p, idx) {
     var key = (p.ticker || '').toUpperCase() + '|' + (p.expiry || '');
     if (!groups[key]) { groups[key] = { ticker: p.ticker || '', expiry: p.expiry || '', legs: [] }; order.push(key); }
-    groups[key].legs.push(p);
+    groups[key].legs.push({ idx: idx, leg: p });
   });
   return order.map(function(key) {
     var legs = groups[key].legs;
     var wSum = 0, wIvSum = 0, premTotal = 0, theoTotal = 0, rvVals = [];
-    legs.forEach(function(p) {
-      var r = cH(p), sign = p.side === 'Short' ? -1 : 1;
+    legs.forEach(function(entry) {
+      var p = entry.leg, r = cH(p), sign = p.side === 'Short' ? -1 : 1;
       var m = n(p.multiplier), sh = m != null ? m / 100 : 1, q = n(p.qty);
       var w = r.posVega != null ? Math.abs(r.posVega) : null, iv = n(p.iv);
       if (w != null && iv != null) { wSum += w; wIvSum += w * iv; }
@@ -119,10 +119,10 @@ function groupStructures(hedged) {
       var rv = n(p.rvForecast);
       if (rv != null) rvVals.push(rv);
     });
-    var weightedIv = wSum > 0 ? wIvSum / wSum : (n(legs[0].iv) != null ? n(legs[0].iv) : null);
+    var weightedIv = wSum > 0 ? wIvSum / wSum : (n(legs[0].leg.iv) != null ? n(legs[0].leg.iv) : null);
     var rvForecast = rvVals.length ? rvVals.reduce(function(a, b) { return a + b; }, 0) / rvVals.length : null;
     var edge = (rvForecast != null && weightedIv != null) ? (rvForecast - weightedIv) : null;
-    return { ticker: groups[key].ticker, expiry: groups[key].expiry, legCount: legs.length, weightedIv: weightedIv, rvForecast: rvForecast, edge: edge, premiumTotal: premTotal, theoTotal: theoTotal };
+    return { ticker: groups[key].ticker, expiry: groups[key].expiry, legIdx: legs.map(function(e) { return e.idx; }), legCount: legs.length, weightedIv: weightedIv, rvForecast: rvForecast, edge: edge, premiumTotal: premTotal, theoTotal: theoTotal };
   });
 }
 
