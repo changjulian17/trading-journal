@@ -76,6 +76,8 @@ test('bh: returns correct keys with defaults', () => {
   assert.equal(p.rehedgeValue, null);
   assert.equal(p.timeExitDte, null);
   assert.equal(p.notes, '');
+  assert.equal(p.structureType, '');
+  assert.equal(p.openedAt, '');
 });
 test('bh: returns fresh object each call', () => {
   assert.notEqual(bh(), bh());
@@ -447,6 +449,43 @@ test('groupStructures: edge = rvForecast (avg across legs) - weightedIv', () => 
   assert.equal(g[0].weightedIv, 20);
   assert.equal(g[0].rvForecast, 32); // avg(30,34)
   assert.equal(g[0].edge, 12);
+});
+
+test('groupStructures: structureType is read off the group\'s first leg', () => {
+  const call = { ...bh(), ticker: 'NVDA', expiry: '2026-10-16', structureType: 'Straddle' };
+  const put = { ...bh(), ticker: 'NVDA', expiry: '2026-10-16', structureType: 'Straddle' };
+  const g = groupStructures([call, put]);
+  assert.equal(g[0].structureType, 'Straddle');
+});
+
+test('groupStructures: structureType defaults to empty string when unset', () => {
+  const g = groupStructures([{ ...bh(), ticker: 'SPY', expiry: '2026-10-16' }]);
+  assert.equal(g[0].structureType, '');
+});
+
+test('groupStructures: dte is shared across legs of one structure (same expiry)', () => {
+  const call = { ...bh(), ticker: 'NVDA', expiry: '2026-09-19' };
+  const put = { ...bh(), ticker: 'NVDA', expiry: '2026-09-19' };
+  const g = groupStructures([call, put], '2026-09-09');
+  assert.equal(g[0].dte, 10);
+});
+
+test('groupStructures: dte is null when no leg has an expiry', () => {
+  const g = groupStructures([{ ...bh(), ticker: 'SPY' }]);
+  assert.equal(g[0].dte, null);
+});
+
+test('groupStructures: cd sums position delta across legs, net of side', () => {
+  // long call: qty 1 * 1x * delta 50 = 50; short put: -1 * 1 * 1 * -40 = 40 -> total 90
+  const longCall = { ...bh(), ticker: 'NVDA', expiry: '2026-10-16', side: 'Long', qty: 1, multiplier: 100, delta: 50 };
+  const shortPut = { ...bh(), ticker: 'NVDA', expiry: '2026-10-16', side: 'Short', qty: 1, multiplier: 100, delta: -40 };
+  const g = groupStructures([longCall, shortPut]);
+  assert.equal(g[0].cd, 90);
+});
+
+test('groupStructures: cd is null when no leg has a computable position delta', () => {
+  const g = groupStructures([{ ...bh(), ticker: 'SPY', expiry: '2026-10-16' }]);
+  assert.equal(g[0].cd, null);
 });
 
 // ---------------------------------------------------------------------------

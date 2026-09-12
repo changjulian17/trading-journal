@@ -12,7 +12,7 @@ function bs() {
 }
 
 function bh() {
-  return { ticker: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, gamma: null, vega: null, theta: null, iv: null, premAdj: 0, spot: null, expiry: '', strike: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null,
+  return { ticker: '', structureType: '', openedAt: '', side: 'Long', qty: null, hedgeQty: null, multiplier: 100, delta: null, gamma: null, vega: null, theta: null, iv: null, premAdj: 0, spot: null, expiry: '', strike: null, stop1: null, qty1: null, stop2: null, qty2: null, takeProfit: null,
     theoEntry: null, ivRank: null, trailingRv: null, rvForecast: null, commission: null, rehedgeMode: 'delta', rehedgeValue: null, timeExitDte: null, notes: '' };
 }
 
@@ -97,18 +97,18 @@ function cH(p, asOf) {
 // blotter-discipline convention of logging a straddle/strangle as one record, not N.
 // weightedIv is vega-weighted across legs (falls back to the lone leg's IV when no vega is
 // available to weight with). premiumTotal/theoTotal are net signed sums (Short legs subtract).
-function groupStructures(hedged) {
+function groupStructures(hedged, asOf) {
   var groups = {}, order = [];
   (hedged || []).forEach(function(p, idx) {
     var key = (p.ticker || '').toUpperCase() + '|' + (p.expiry || '');
-    if (!groups[key]) { groups[key] = { ticker: p.ticker || '', expiry: p.expiry || '', legs: [] }; order.push(key); }
+    if (!groups[key]) { groups[key] = { ticker: p.ticker || '', expiry: p.expiry || '', structureType: p.structureType || '', legs: [] }; order.push(key); }
     groups[key].legs.push({ idx: idx, leg: p });
   });
   return order.map(function(key) {
     var legs = groups[key].legs;
-    var wSum = 0, wIvSum = 0, premTotal = 0, theoTotal = 0, rvVals = [];
+    var wSum = 0, wIvSum = 0, premTotal = 0, theoTotal = 0, rvVals = [], cdTotal = 0, cdSeen = false, dte = null;
     legs.forEach(function(entry) {
-      var p = entry.leg, r = cH(p), sign = p.side === 'Short' ? -1 : 1;
+      var p = entry.leg, r = cH(p, asOf), sign = p.side === 'Short' ? -1 : 1;
       var m = n(p.multiplier), sh = m != null ? m / 100 : 1, q = n(p.qty);
       var w = r.posVega != null ? Math.abs(r.posVega) : null, iv = n(p.iv);
       if (w != null && iv != null) { wSum += w; wIvSum += w * iv; }
@@ -118,11 +118,13 @@ function groupStructures(hedged) {
       if (theo != null && q != null) theoTotal += sign * theo * q * sh;
       var rv = n(p.rvForecast);
       if (rv != null) rvVals.push(rv);
+      if (r.cd != null) { cdTotal += r.cd; cdSeen = true; }
+      if (dte == null && r.dte != null) dte = r.dte; // legs of one structure share an expiry -> same DTE
     });
     var weightedIv = wSum > 0 ? wIvSum / wSum : (n(legs[0].leg.iv) != null ? n(legs[0].leg.iv) : null);
     var rvForecast = rvVals.length ? rvVals.reduce(function(a, b) { return a + b; }, 0) / rvVals.length : null;
     var edge = (rvForecast != null && weightedIv != null) ? (rvForecast - weightedIv) : null;
-    return { ticker: groups[key].ticker, expiry: groups[key].expiry, legIdx: legs.map(function(e) { return e.idx; }), legCount: legs.length, weightedIv: weightedIv, rvForecast: rvForecast, edge: edge, premiumTotal: premTotal, theoTotal: theoTotal };
+    return { ticker: groups[key].ticker, expiry: groups[key].expiry, structureType: groups[key].structureType, dte: dte, legIdx: legs.map(function(e) { return e.idx; }), legCount: legs.length, weightedIv: weightedIv, rvForecast: rvForecast, edge: edge, premiumTotal: premTotal, theoTotal: theoTotal, cd: cdSeen ? cdTotal : null };
   });
 }
 
