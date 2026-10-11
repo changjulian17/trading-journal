@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>1 Chronicles Studies 4–6 Quiz</title>
+<style>
+:root{--bg:#0f1419;--panel:#1a2028;--panel-2:#232b36;--border:#2d3744;--text:#e6edf3;--muted:#8b96a5;--accent:#4a9eff;--green:#3fb950;--red:#f85149;--amber:#d29922;--touch:48px}
+*{box-sizing:border-box;margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 16px}
+header h1{font-size:17px;font-weight:600}
+header p{color:var(--muted);font-size:13px;margin-top:2px}
+main{max-width:760px;margin:0 auto;padding:12px 16px 32px}
+.q{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
+.q.ok{border-color:var(--green)}.q.bad{border-color:var(--red)}
+.qt{font-weight:600;margin-bottom:10px}
+.qt .n{color:var(--muted);margin-right:6px}
+.opt{display:flex;align-items:flex-start;gap:10px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;min-height:var(--touch)}
+.opt:last-of-type{margin-bottom:0}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:var(--accent)}
+.opt .l{color:var(--muted);font-weight:600;min-width:18px}
+.opt:hover{border-color:var(--accent)}
+.done .opt{cursor:default}.done .opt:hover{border-color:var(--border)}
+.opt.right{border-color:var(--green);background:rgba(63,185,80,.12)}
+.opt.wrong{border-color:var(--red);background:rgba(248,81,73,.12)}
+.ref{display:none;margin-top:10px;font-size:13px;color:var(--muted)}
+.done .ref{display:block}
+.ref b{color:var(--text)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px 20px;font-size:15px;font-weight:600;min-height:var(--touch);cursor:pointer}
+button.sec{background:var(--panel-2);color:var(--text);border:1px solid var(--border)}
+button[hidden]{display:none}
+.score{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;font-size:18px;font-weight:700;display:none}
+.score.show{display:block}
+.score small{display:block;font-size:13px;font-weight:400;color:var(--muted);margin-top:2px}
+.warn{color:var(--amber);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>1 Chronicles Studies 4–6 Quiz</h1>
+  <p>1 Chronicles 9:35–14:17 · 10 questions</p>
+</header>
+<main>
+  <div class="score" id="score"></div>
+  <form id="quiz"></form>
+  <div class="bar">
+    <button type="button" id="submit">Submit</button>
+    <button type="button" id="retry" class="sec" hidden>Try again</button>
+    <span class="warn" id="warn"></span>
+  </div>
+</main>
+<script>
+// Each question: options[0] is the correct answer; they're shuffled on render.
+const QUESTIONS = [
+  { q: "Why is Saul's genealogy repeated in 1 Chronicles 9:35–44 right before his downfall?",
+    options: ["To transition the narrative from the genealogies to the history of the monarchy",
+      "To show his righteousness compared to David",
+      "To list all the kings of Northern Israel",
+      "To highlight his victory over the Philistines"],
+    ref: "1 Chronicles 9:35–44 / Study 4" },
+  { q: "According to 1 Chronicles 10:13–14, what were the specific reasons given for Saul’s death and the transfer of his kingdom?",
+    options: ["He breached faith with the LORD and consulted a medium instead of seeking the LORD",
+      "He lacked military strength and financial support",
+      "He refused to fight against the Philistines",
+      "He did not build the temple in Jerusalem"],
+    ref: "1 Chronicles 10:13–14 / Study 4" },
+  { q: "Which city did David capture to establish as his royal city and capital?",
+    options: ["Jebus (Jerusalem)", "Hebron", "Bethel", "Shiloh"],
+    ref: "1 Chronicles 11:4–9 / Study 5" },
+  { q: "What motivation did Joab have during David's capture of Jerusalem?",
+    options: ["He was promised to become chief and commander for being the first to strike the Jebusites",
+      "He wanted to avenge his brother's death",
+      "He was assigned by the Levites",
+      "He was seeking refuge from Saul's family"],
+    ref: "1 Chronicles 11:6 / Study 5" },
+  { q: "What did David do with the water brought to him by the three mighty men from the well of Bethlehem?",
+    options: ["He poured it out as a drink offering to the LORD",
+      "He drank it greedily to quench his thirst",
+      "He gave it to his soldiers to build morale",
+      "He saved it for the dedication of the tabernacle"],
+    ref: "1 Chronicles 11:17–19 / Study 5" },
+  { q: "Why was Uzzah struck down when he reached out to steady the Ark of the Covenant in 1 Chronicles 13?",
+    options: ["The Ark was being transported on a cart instead of being carried by the Levites, violating God's holy instructions",
+      "He was an enemy spy in disguise",
+      "He attempted to steal the holy items inside",
+      "He did not offer seven bulls and seven rams first"],
+    ref: "1 Chronicles 13:7–10 (cf. Numbers 4:15) / Study 6" },
+  { q: "How did David react immediately after the Uzzah incident at Perez-uzza?",
+    options: ["He was angry and afraid of God, placing the Ark in the house of Obed-edom",
+      "He celebrated with instruments and singing",
+      "He immediately marched into battle against the Philistines",
+      "He punished the Levites for negligence"],
+    ref: "1 Chronicles 13:11–13 / Study 6" },
+  { q: "What did David recognize when Hiram king of Tyre sent timber, masons, and carpenters to build him a palace (1 Chronicles 14:1–2)?",
+    options: ["That the LORD had established him as king over Israel and highly exalted his kingdom",
+      "That Tyre was planning an invasion",
+      "That he should construct the temple immediately",
+      "That he needed to tax his people more heavily"],
+    ref: "1 Chronicles 14:1–2 / Study 6" },
+  { q: "How did David approach his battles against the Philistines in 1 Chronicles 14?",
+    options: ["He inquired of God before each battle and followed His specific directions",
+      "He relied solely on Joab’s strategic advice",
+      "He made an alliance with Egypt",
+      "He waited inside the stronghold until the Philistines retreated"],
+    ref: "1 Chronicles 14:8–16 / Study 6" },
+  { q: "What principle is demonstrated when David defeated the Philistines at Baal-perazim and the Valley of Rephaim?",
+    options: ["The battle belongs to the LORD, who broke through David's enemies like a bursting flood",
+      "Military superiority wins all battles",
+      "Victory depends on human effort alone",
+      "The Philistines were abandoned by their allies"],
+    ref: "1 Chronicles 14:11 (cf. 1 Samuel 17:47) / Study 6" },
+];
+
+const form = document.getElementById('quiz');
+const scoreEl = document.getElementById('score');
+const submitBtn = document.getElementById('submit');
+const retryBtn = document.getElementById('retry');
+const warnEl = document.getElementById('warn');
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function esc(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function render() {
+  form.innerHTML = QUESTIONS.map((item, qi) => {
+    const opts = shuffle(item.options.map((text, i) => ({ text, correct: i === 0 })));
+    const optsHtml = opts.map((o, oi) => `
+      <label class="opt" data-correct="${o.correct}">
+        <input type="radio" name="q${qi}" value="${o.correct ? 1 : 0}">
+        <span class="l">${'ABCD'[oi]})</span><span>${esc(o.text)}</span>
+      </label>`).join('');
+    return `<div class="q" id="q${qi}">
+      <div class="qt"><span class="n">${qi + 1}.</span>${esc(item.q)}</div>
+      ${optsHtml}
+      <div class="ref"><b>Reference:</b> ${esc(item.ref)}</div>
+    </div>`;
+  }).join('');
+  scoreEl.className = 'score';
+  submitBtn.hidden = false;
+  retryBtn.hidden = true;
+  warnEl.textContent = '';
+}
+
+submitBtn.addEventListener('click', () => {
+  const unanswered = QUESTIONS.filter((_, qi) => !form.querySelector(`input[name="q${qi}"]:checked`)).length;
+  if (unanswered && !warnEl.dataset.confirmed) {
+    warnEl.textContent = `${unanswered} unanswered — tap Submit again to finish anyway.`;
+    warnEl.dataset.confirmed = '1';
+    return;
+  }
+  delete warnEl.dataset.confirmed;
+  let correct = 0;
+  QUESTIONS.forEach((_, qi) => {
+    const block = document.getElementById(`q${qi}`);
+    const picked = form.querySelector(`input[name="q${qi}"]:checked`);
+    const isRight = picked && picked.value === '1';
+    if (isRight) correct++;
+    block.classList.add('done', isRight ? 'ok' : 'bad');
+    block.querySelectorAll('.opt').forEach(opt => {
+      opt.querySelector('input').disabled = true;
+      if (opt.dataset.correct === 'true') opt.classList.add('right');
+      else if (opt.querySelector('input').checked) opt.classList.add('wrong');
+    });
+  });
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+  scoreEl.innerHTML = `Score: ${correct} / ${QUESTIONS.length} (${pct}%)<small>Correct answers highlighted green, with references.</small>`;
+  scoreEl.className = 'score show';
+  submitBtn.hidden = true;
+  retryBtn.hidden = false;
+  warnEl.textContent = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+retryBtn.addEventListener('click', () => { render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+render();
+</script>
+</body>
+</html>

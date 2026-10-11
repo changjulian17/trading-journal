@@ -63,6 +63,11 @@ app.get('/api/public/latest', (req, res) => {
   });
 });
 
+// Public Bible study quiz — static page, no data access.
+app.get('/quiz/1-chron-study7', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'quiz', '1-chron-study7.html'));
+});
+
 // --- Everything below requires a valid session ---
 app.use(auth.requireAuth);
 
